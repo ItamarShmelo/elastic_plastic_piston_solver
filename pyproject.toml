@@ -1,0 +1,14 @@
+[project]
+name = "elastic-plastic-piston-solver"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "astropy>=7.2.0",
+    "matplotlib>=3.10.7",
+    "mypy>=1.19.1",
+    "numpy>=2.3.3",
+    "scipy>=1.15.0",
+    "scipy-stubs>=1.17.0.2",
+]
