@@ -65,7 +65,7 @@ region** (ahead of the elastic precursor).
 To reproduce these plots, run:
 
 ```bash
-python example_aluminum_piston.py
+python examples/example_aluminum_piston.py
 ```
 
 ## Derivation of the Analytic Solution

@@ -17,14 +17,21 @@ Initial conditions:
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+
+# Ensure the project root is on the import path so the solver module is found
+# regardless of where this script is invoked from.
+_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 from elastoplastic_piston_solver import ElastoplasticPistonSolver
 
-ASSETS_DIR = Path(__file__).parent / "assets"
+ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 
 
 def main() -> None:
