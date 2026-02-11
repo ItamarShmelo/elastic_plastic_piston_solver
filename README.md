@@ -197,11 +197,7 @@ When given a grid $x_{1},x_{2}....$ and a time $t$ we
 
 3.  For a physical value $X$ we return
 
-    $$X\left(x_{i}\right)=\begin{cases}
-    X_{2} & x_{i}<U_{s}t\\
-    X^{Y} & U_{s}t\leq x_{i}\leq U_{se}t\\
-    X_{initial} & U_{se}t<x_{i}
-    \end{cases}$$
+$$X(x_i) = \left\lbrace \begin{array}{ll} X_2 & x_i < U_s t \\ X^Y & U_s t \leq x_i \leq U_{se} t \\ X_{\text{initial}} & U_{se} t < x_i \end{array} \right.$$
 
 ## Mie-Gruneisen EOS
 
