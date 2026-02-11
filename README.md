@@ -237,3 +237,11 @@ The EOS parameters are:
 | $C_{0}$      | Bulk sound speed at reference state      |
 | $s$          | Hugoniot slope coefficient               |
 | $\Gamma_{0}$ | Gruneisen parameter (assumed constant)   |
+
+## References
+
+- H.S. Udaykumar, L. Tran, D.M. Belk, K.J. Vanden,
+  "An Eulerian method for computation of multimaterial impact with ENO
+  shock-capturing and sharp interfaces,"
+  *Journal of Computational Physics*, vol. 186, pp. 136–177, 2003.
+  [doi:10.1016/S0021-9991(03)00027-5](https://doi.org/10.1016/S0021-9991(03)00027-5).
