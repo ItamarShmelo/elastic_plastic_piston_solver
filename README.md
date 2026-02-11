@@ -233,12 +233,16 @@ $$P\left(e,\rho\right)=\frac{\rho_{0}C_{0}^{2}\mu}{\left(1-s\mu\right)^{2}}+\Gam
 
 The EOS parameters are:
 
+<div align="center">
+
 | Parameter    | Description                              |
 |--------------|------------------------------------------|
 | $\rho_{0}$   | Reference density                        |
 | $C_{0}$      | Bulk sound speed at reference state      |
 | $s$          | Hugoniot slope coefficient               |
 | $\Gamma_{0}$ | Gruneisen parameter (assumed constant)   |
+
+</div>
 
 ## References
 
