@@ -137,8 +137,6 @@ class ElastoplasticPistonSolver:
         Hugoniot slope coefficient (linear Us-Up relation).
     Gamma_0 : float
         Gruneisen parameter (assumed constant).
-    P_0 : float
-        Reference pressure offset.
     G : float
         Shear modulus.
     Y_0 : float
@@ -155,7 +153,6 @@ class ElastoplasticPistonSolver:
         C_0: float,
         s: float,
         Gamma_0: float,
-        P_0: float,
         G: float,
         Y_0: float,
         e_initial: float,
@@ -166,7 +163,6 @@ class ElastoplasticPistonSolver:
         self.C_0: float = C_0
         self.s: float = s
         self.Gamma_0: float = Gamma_0
-        self.P_0: float = P_0
 
         # Elastoplastic parameters
         self.G: float = G
@@ -197,7 +193,7 @@ class ElastoplasticPistonSolver:
     def _eos(self, e: float, rho: float) -> float:
         """Evaluate the Mie-Gruneisen EOS with stored parameters."""
         return _mie_gruneisen_pressure(
-            e, rho, self.rho_0, self.C_0, self.s, self.Gamma_0, self.P_0,
+            e, rho, self.rho_0, self.C_0, self.s, self.Gamma_0,
         )
 
     # -- core algorithm ----------------------------------------------------
