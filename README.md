@@ -177,15 +177,15 @@ $$v_{2}=v_{piston}$$
 
 6.  Then we find $U_{s}$ by finding the root of the function
 
-    $$f_{S}\left(U_{s}\right)=P_{2}\left(U_{s}\right)-P_{eos}\left(\rho_{2}\left(U_{s}\right),e_{2}\left(U_{s}\right)\right)$$
+$$f_{S}\left(U_{s}\right)=P_{2}\left(U_{s}\right)-P_{eos}\left(\rho_{2}\left(U_{s}\right),e_{2}\left(U_{s}\right)\right)$$
 
-    using $v_{2}=v_{piston}$ and
+using $v_{2}=v_{piston}$ and
 
-    $$P_{2}=P^{Y}+\rho^{Y}\left(U_{s}-v^{Y}\right)\left(v_{2}-v^{Y}\right)$$
+$$P_{2}=P^{Y}+\rho^{Y}\left(U_{s}-v^{Y}\right)\left(v_{2}-v^{Y}\right)$$
 
-    $$\rho_{2}=\rho^{Y}\frac{U_{s}-v^{Y}}{U_{s}-v_{2}}$$
+$$\rho_{2}=\rho^{Y}\frac{U_{s}-v^{Y}}{U_{s}-v_{2}}$$
 
-    $$e_{2}=e^{Y}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)$$
+$$e_{2}=e^{Y}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)$$
 
 7.  Calculating $P_{2},\rho_{2},e_{2}$ from the relations.
 
