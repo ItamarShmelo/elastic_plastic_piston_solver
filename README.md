@@ -153,27 +153,27 @@ $$v_{2}=v_{piston}$$
 
 1.  Define problem parameters
 
-    $$\text{EOS} :\rho_{0},C_{0},s,\Gamma_{0}$$
+$$\text{EOS} :\rho_{0},C_{0},s,\Gamma_{0}$$
 
-    $$\text{Elastoplastic} :G,Y_{0}$$
+$$\text{Elastoplastic} :G,Y_{0}$$
 
-    $$\text{Initial Conditions} :e_{initial},v_{piston}$$
+$$\text{Initial Conditions} :e_{initial},v_{piston}$$
 
 2.  Calculate $\rho^{Y}$ via
 
-    $$\rho^{Y}=\rho_{0}e^{\frac{Y_{0}}{2G}}$$
+$$\rho^{Y}=\rho_{0}e^{\frac{Y_{0}}{2G}}$$
 
 3.  Calculate $e^{Y},p^{Y}$ by finding the root of the function
 
-    $$f_{Y}\left(e^{Y}\right)=e^{Y}-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\left(e^{Y},\rho^{Y}\right)+\frac{2}{3}Y_{0}\right)\left(\rho^{Y}-\rho_{0}\right)$$
+$$f_{Y}\left(e^{Y}\right)=e^{Y}-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\left(e^{Y},\rho^{Y}\right)+\frac{2}{3}Y_{0}\right)\left(\rho^{Y}-\rho_{0}\right)$$
 
 4.  Calculate $U_{se}$
 
-    $$U_{se}^{2}=-\frac{\rho^{Y}\left(P^{Y}+\frac{2}{3}Y_{0}\right)}{\rho_{0}(\rho_{0}-\rho^{Y})}$$
+$$U_{se}^{2}=-\frac{\rho^{Y}\left(P^{Y}+\frac{2}{3}Y_{0}\right)}{\rho_{0}(\rho_{0}-\rho^{Y})}$$
 
 5.  Calculate $v^{Y}$ via
 
-    $$v^{Y}=\frac{\rho^{Y}-\rho_{0}}{\rho^{Y}}U_{se}$$
+$$v^{Y}=\frac{\rho^{Y}-\rho_{0}}{\rho^{Y}}U_{se}$$
 
 6.  Then we find $U_{s}$ by finding the root of the function
 
