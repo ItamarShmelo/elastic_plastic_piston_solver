@@ -51,6 +51,7 @@ def main() -> None:
     t: float = 2.0e-6  # seconds
 
     # Domain: from 0 to slightly beyond the elastic precursor
+    assert solver.U_se is not None
     x_max: float = 1.2 * solver.U_se * t
     x = np.linspace(0.0, x_max, 1000)
 

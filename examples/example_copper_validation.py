@@ -152,7 +152,13 @@ def main() -> None:
         v_piston=20.0,
     )
 
-    elastic_20 = {
+    assert solver_20.U_se is not None and solver_20.v_Y is not None
+    assert solver_20.rho_Y is not None and solver_20.e_Y is not None
+    assert solver_20.P_Y is not None
+    assert solver_20.U_s is not None and solver_20.rho_2 is not None
+    assert solver_20.e_2 is not None and solver_20.P_2 is not None
+
+    elastic_20: dict[str, float] = {
         "wave_speed": solver_20.U_se,
         "particle_velocity": solver_20.v_Y,
         "density": solver_20.rho_Y,
@@ -162,7 +168,7 @@ def main() -> None:
         "total_stress": -two_thirds_Y0 - solver_20.P_Y,
     }
 
-    plastic_20 = {
+    plastic_20: dict[str, float] = {
         "wave_speed": solver_20.U_s,
         "particle_velocity": solver_20.v_piston,
         "density": solver_20.rho_2,
@@ -175,7 +181,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     # 2. Compare computed values against reference Table 1
     # ------------------------------------------------------------------
-    computed = {
+    computed: dict[str, dict[str, float]] = {
         "Elastic precursor, 20 m/s": elastic_20,
         "Plastic shock, 20 m/s": plastic_20,
     }

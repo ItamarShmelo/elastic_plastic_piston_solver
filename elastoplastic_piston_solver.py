@@ -13,10 +13,9 @@ derivation and notation.
 from __future__ import annotations
 
 import math
-from typing import Any
 
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 from scipy.optimize import brentq
 
 
@@ -173,15 +172,15 @@ class ElastoplasticPistonSolver:
         self.v_piston: float = v_piston
 
         # Solved state variables (populated by _solve_wave_structure)
-        self.rho_Y: float = 0.0
-        self.e_Y: float = 0.0
-        self.P_Y: float = 0.0
-        self.U_se: float = 0.0
-        self.v_Y: float = 0.0
-        self.U_s: float = 0.0
-        self.rho_2: float = 0.0
-        self.P_2: float = 0.0
-        self.e_2: float = 0.0
+        self.rho_Y: float | None = None
+        self.e_Y: float | None = None
+        self.P_Y: float | None = None
+        self.U_se: float | None = None
+        self.v_Y: float | None = None
+        self.U_s: float | None = None
+        self.rho_2: float | None = None
+        self.P_2: float | None = None
+        self.e_2: float | None = None
 
         # Initial-region pressure (full EOS at reference state)
         self.P_initial: float = self._eos(e_initial, rho_0)
@@ -316,6 +315,8 @@ class ElastoplasticPistonSolver:
 
     def _validate(self) -> None:
         """Check physics invariants; raise ``ValueError`` on failure."""
+        assert self.U_se is not None and self.U_s is not None
+        assert self.rho_Y is not None and self.rho_2 is not None
         if not self.U_se > self.U_s:
             raise ValueError(
                 f"Elastic precursor speed U_se={self.U_se} must exceed "
@@ -336,16 +337,17 @@ class ElastoplasticPistonSolver:
     def solve(
         self,
         t: float,
-        x: npt.NDArray[np.floating[Any]],
+        x: ArrayLike,
     ) -> dict[str, object]:
         """Evaluate the piecewise-constant analytic solution.
 
         Parameters
         ----------
         t : float
-            Time at which to evaluate the solution.
-        x : numpy array of floats
-            Spatial positions at which to evaluate the solution.
+            Time at which to evaluate the solution.  Must be non-negative.
+        x : array-like of floats
+            Spatial positions at which to evaluate the solution.  All values
+            must be non-negative.
 
         Returns
         -------
@@ -372,10 +374,21 @@ class ElastoplasticPistonSolver:
         compressed regions.  This follows the convention in the reference
         derivation.
         """
+        if t < 0:
+            raise ValueError(f"Time must be non-negative, got t={t}.")
+
+        x_arr = np.asarray(x, dtype=np.float64)
+
+        if np.any(x_arr < 0):
+            raise ValueError("All spatial positions x must be non-negative.")
+
+        assert self.U_s is not None and self.U_se is not None
+        assert self.rho_Y is not None and self.e_Y is not None and self.P_Y is not None
+        assert self.v_Y is not None
+        assert self.rho_2 is not None and self.P_2 is not None and self.e_2 is not None
+
         shock_loc: float = self.U_s * t
         elastic_loc: float = self.U_se * t
-
-        x_arr: npt.NDArray[np.floating[Any]] = np.asarray(x, dtype=np.float64)
 
         # Region masks
         shocked = x_arr < shock_loc
