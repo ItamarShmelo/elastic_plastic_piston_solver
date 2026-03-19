@@ -68,6 +68,62 @@ To reproduce these plots, run:
 python examples/example_aluminum_piston.py
 ```
 
+## Energy-Split Mode
+
+The solver supports an optional **energy-split mode** that decomposes the
+internal energy into thermal and elastic contributions:
+
+$$e = e_{th} + e_{el}, \qquad e_{el} = \frac{\boldsymbol{S}:\boldsymbol{S}}{4\rho G}$$
+
+In this mode the EOS receives only the thermal part, $P(e_{th}, \rho)$,
+rather than the total energy.  Enable it by passing `energy_split=True`:
+
+```python
+solver = ElastoplasticPistonSolver(
+    rho_0=2.79, C_0=5.33e5, s=1.34, Gamma_0=2.0,
+    G=2.86e11, Y_0=2.6e9,
+    e_initial=0.0, v_piston=5000.0,
+    energy_split=True,   # <-- enable energy-split mode
+)
+```
+
+When `energy_split=True` the returned dictionary from `solver.solve()`
+includes two additional arrays, `"e_thermal"` and `"e_elastic"`, alongside
+the usual fields.  The `"energy"` key continues to hold the total energy.
+
+### Modified equations
+
+The yield-energy root-finding equation becomes:
+
+$$f_{Y}(e_{th}^{Y}) = e_{th}^{Y} + \frac{Y_0^2}{6\rho^{Y}G} - e_0 - \frac{1}{2\rho^{Y}\rho_0}\left(P^{Y}(e_{th}^{Y},\rho^{Y}) + \tfrac{2}{3}Y_0\right)(\rho^{Y} - \rho_0)$$
+
+and the shocked thermal energy is:
+
+$$e_{th,2} = e_{th}^{Y} + \frac{Y_0^2}{6\rho^{Y}G} + \frac{1}{2\rho^{Y}\rho_2}\left(P^{Y} + P_2 + \tfrac{4}{3}Y_0\right)(\rho_2 - \rho^{Y}) - \frac{Y_0^2}{6\rho_2 G}$$
+
+See the [Derivation of the Analytic Solution](#derivation-of-the-analytic-solution)
+section below for the full derivation.
+
+### Mode comparison
+
+For typical metals ($Y_0/G \sim 10^{-3}$) the two modes give nearly
+identical results ($< 0.1\%$ relative difference).  The effect becomes
+significant when $Y_0/G \gtrsim 0.05$.
+
+A detailed quantitative comparison for Aluminum, Copper, and a
+high-strength test case is available in
+[`examples/energy_split_comparison.md`](examples/energy_split_comparison.md).
+
+To regenerate the comparison plots and report, run:
+
+```bash
+python examples/example_mode_comparison.py
+```
+
+### High-strength case ($Y_0/G = 0.70$) — stress and velocity comparison
+
+![High-strength comparison](assets/high_strength_comparison.png)
+
 ## Derivation of the Analytic Solution
 
 We start the deviatoric stress, below the yield limit.
@@ -167,6 +223,10 @@ $$\rho^{Y}=\rho_{0}e^{\frac{Y_{0}}{2G}}$$
 
 $$f_{Y}\left(e^{Y}\right)=e^{Y}-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\left(e^{Y},\rho^{Y}\right)+\frac{2}{3}Y_{0}\right)\left(\rho^{Y}-\rho_{0}\right)$$
 
+or with the energy-split mode, solve for $e_{th}^{Y}$:
+
+$$f_{Y}\left(e_{th}^{Y}\right)=e_{th}^{Y}+\frac{Y_{0}^{2}}{6\rho^{Y}G}-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\left(e_{th}^{Y},\rho^{Y}\right)+\frac{2}{3}Y_{0}\right)\left(\rho^{Y}-\rho_{0}\right)$$
+
 4.  Calculate $U_{se}$
 
 $$U_{se}^{2}=-\frac{\rho^{Y}\left(P^{Y}+\frac{2}{3}Y_{0}\right)}{\rho_{0}(\rho_{0}-\rho^{Y})}$$
@@ -186,6 +246,10 @@ $$P_{2}=P^{Y}+\rho^{Y}\left(U_{s}-v^{Y}\right)\left(v_{2}-v^{Y}\right)$$
 $$\rho_{2}=\rho^{Y}\frac{U_{s}-v^{Y}}{U_{s}-v_{2}}$$
 
 $$e_{2}=e^{Y}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)$$
+
+or with the energy-split mode, use $e_{th,2}$ in the EOS:
+
+$$e_{th,2}=e_{th}^{Y}+\frac{Y_{0}^{2}}{6\rho^{Y}G}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)-\frac{Y_{0}^{2}}{6\rho_{2}G}$$
 
 7.  Calculating $P_{2},\rho_{2},e_{2}$ from the relations.
 

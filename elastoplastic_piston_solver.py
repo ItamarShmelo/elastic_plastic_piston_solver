@@ -6,8 +6,7 @@ constant regions separated by an elastic precursor wave and a plastic shock.
 
 Reference
 ---------
-See ``references/elastoplastic_piston_test_problem.tex`` for the full
-derivation and notation.
+See the derivation in ``README.md`` for the full notation and equations.
 """
 
 from __future__ import annotations
@@ -144,6 +143,11 @@ class ElastoplasticPistonSolver:
         Initial specific internal energy.
     v_piston : float
         Piston velocity (positive, in the +x direction).
+    energy_split : bool
+        If ``True``, split the internal energy into thermal and elastic
+        components and feed only the thermal part to the EOS.  The elastic
+        energy is ``S:S / (4 rho G)``.  Default is ``False`` (original
+        single-energy formulation).
     """
 
     def __init__(
@@ -156,6 +160,7 @@ class ElastoplasticPistonSolver:
         Y_0: float,
         e_initial: float,
         v_piston: float,
+        energy_split: bool = False,
     ) -> None:
         # Store EOS parameters
         self.rho_0: float = rho_0
@@ -171,6 +176,9 @@ class ElastoplasticPistonSolver:
         self.e_initial: float = e_initial
         self.v_piston: float = v_piston
 
+        # Mode flag
+        self.energy_split: bool = energy_split
+
         # Solved state variables (populated by _solve_wave_structure)
         self.rho_Y: float | None = None
         self.e_Y: float | None = None
@@ -181,6 +189,12 @@ class ElastoplasticPistonSolver:
         self.rho_2: float | None = None
         self.P_2: float | None = None
         self.e_2: float | None = None
+
+        # Energy-split mode quantities (None when energy_split=False)
+        self.e_th_Y: float | None = None
+        self.e_el_Y: float | None = None
+        self.e_th_2: float | None = None
+        self.e_el_2: float | None = None
 
         # Initial-region pressure (full EOS at reference state)
         self.P_initial: float = self._eos(e_initial, rho_0)
@@ -217,21 +231,38 @@ class ElastoplasticPistonSolver:
         # Step 3 -- yield energy (root-finding)
         two_thirds_Y0: float = 2.0 / 3.0 * Y_0
         four_thirds_Y0: float = 4.0 / 3.0 * Y_0
-
-        def f_yield(e: float) -> float:
-            P = self._eos(e, rho_Y)
-            return (
-                e
-                - e_0
-                - 0.5 / (rho_Y * rho_0) * (P + two_thirds_Y0) * (rho_Y - rho_0)
-            )
+        e_el_Y: float = Y_0**2 / (6.0 * rho_Y * G)
 
         e_lo: float = e_0
         e_hi: float = e_0 + 10.0 * C_0**2
-        e_Y: float = brentq(f_yield, e_lo, e_hi)
-        self.e_Y = e_Y
 
-        P_Y: float = self._eos(e_Y, rho_Y)
+        if self.energy_split:
+            def f_yield(e_th: float) -> float:
+                P = self._eos(e_th, rho_Y)
+                return (
+                    e_th + e_el_Y
+                    - e_0
+                    - 0.5 / (rho_Y * rho_0) * (P + two_thirds_Y0) * (rho_Y - rho_0)
+                )
+
+            e_th_Y: float = brentq(f_yield, e_lo, e_hi)
+            self.e_th_Y = e_th_Y
+            self.e_el_Y = e_el_Y
+            self.e_Y = e_th_Y + e_el_Y
+            P_Y: float = self._eos(e_th_Y, rho_Y)
+        else:
+            def f_yield(e: float) -> float:
+                P = self._eos(e, rho_Y)
+                return (
+                    e
+                    - e_0
+                    - 0.5 / (rho_Y * rho_0) * (P + two_thirds_Y0) * (rho_Y - rho_0)
+                )
+
+            e_Y: float = brentq(f_yield, e_lo, e_hi)
+            self.e_Y = e_Y
+            P_Y: float = self._eos(e_Y, rho_Y)
+
         self.P_Y = P_Y
 
         # Step 4 -- elastic precursor speed
@@ -258,18 +289,38 @@ class ElastoplasticPistonSolver:
         # multiple roots.  The physical root is the one nearest U_se (moderate
         # compression), not the spurious low-velocity root (extreme
         # compression).  We search downward from U_se to find the bracket.
-        def f_shock(U_s: float) -> float:
-            v_2 = v_piston
-            P_2 = P_Y + rho_Y * (U_s - v_Y) * (v_2 - v_Y)
-            rho_2 = rho_Y * (U_s - v_Y) / (U_s - v_2)
-            e_2 = (
-                e_Y
-                + 0.5 / (rho_Y * rho_2)
-                * (P_Y + P_2 + four_thirds_Y0)
-                * (rho_2 - rho_Y)
-            )
-            P_eos = self._eos(e_2, rho_2)
-            return P_2 - P_eos
+        if self.energy_split:
+            e_th_Y_local = self.e_th_Y
+            assert e_th_Y_local is not None
+
+            def f_shock(U_s: float) -> float:
+                v_2 = v_piston
+                P_2 = P_Y + rho_Y * (U_s - v_Y) * (v_2 - v_Y)
+                rho_2 = rho_Y * (U_s - v_Y) / (U_s - v_2)
+                e_th_2 = (
+                    e_th_Y_local
+                    + e_el_Y
+                    + 0.5 / (rho_Y * rho_2)
+                    * (P_Y + P_2 + four_thirds_Y0)
+                    * (rho_2 - rho_Y)
+                    - Y_0**2 / (6.0 * rho_2 * G)
+                )
+                return P_2 - self._eos(e_th_2, rho_2)
+        else:
+            e_Y_local = self.e_Y
+            assert e_Y_local is not None
+
+            def f_shock(U_s: float) -> float:
+                v_2 = v_piston
+                P_2 = P_Y + rho_Y * (U_s - v_Y) * (v_2 - v_Y)
+                rho_2 = rho_Y * (U_s - v_Y) / (U_s - v_2)
+                e_2 = (
+                    e_Y_local
+                    + 0.5 / (rho_Y * rho_2)
+                    * (P_Y + P_2 + four_thirds_Y0)
+                    * (rho_2 - rho_Y)
+                )
+                return P_2 - self._eos(e_2, rho_2)
 
         # Bracket: search downward from U_se in geometric steps until
         # f_shock changes sign.  This finds the physical root (nearest U_se).
@@ -300,15 +351,31 @@ class ElastoplasticPistonSolver:
         v_2 = v_piston
         P_2: float = P_Y + rho_Y * (U_s - v_Y) * (v_2 - v_Y)
         rho_2: float = rho_Y * (U_s - v_Y) / (U_s - v_2)
-        e_2: float = (
-            e_Y
-            + 0.5 / (rho_Y * rho_2)
-            * (P_Y + P_2 + four_thirds_Y0)
-            * (rho_2 - rho_Y)
-        )
+
+        if self.energy_split:
+            assert self.e_th_Y is not None
+            e_el_2: float = Y_0**2 / (6.0 * rho_2 * G)
+            e_th_2: float = (
+                self.e_th_Y
+                + e_el_Y
+                + 0.5 / (rho_Y * rho_2)
+                * (P_Y + P_2 + four_thirds_Y0)
+                * (rho_2 - rho_Y)
+                - e_el_2
+            )
+            self.e_th_2 = e_th_2
+            self.e_el_2 = e_el_2
+            self.e_2 = e_th_2 + e_el_2
+        else:
+            self.e_2 = (
+                self.e_Y
+                + 0.5 / (rho_Y * rho_2)
+                * (P_Y + P_2 + four_thirds_Y0)
+                * (rho_2 - rho_Y)
+            )
+
         self.P_2 = P_2
         self.rho_2 = rho_2
-        self.e_2 = e_2
 
         # Step 8 -- physics invariant checks
         self._validate()
@@ -358,7 +425,7 @@ class ElastoplasticPistonSolver:
             * ``"pressure"`` -- numpy array, pressure at each *x_i*.
             * ``"velocity"`` -- numpy array, velocity at each *x_i*.
             * ``"energy"``   -- numpy array, specific internal energy at
-              each *x_i*.
+              each *x_i* (total energy, including elastic contribution).
             * ``"Sx"``       -- numpy array, deviatoric stress component
               *S_x* at each *x_i*.
             * ``"stress"``   -- numpy array, total axial stress
@@ -367,6 +434,12 @@ class ElastoplasticPistonSolver:
               position *U_s * t*.
             * ``"elastic_precursor_location"`` -- float, elastic precursor
               position *U_se * t*.
+
+            When ``energy_split=True``, two additional keys are present:
+
+            * ``"e_thermal"`` -- numpy array, thermal specific energy.
+            * ``"e_elastic"`` -- numpy array, elastic specific energy
+              (*S:S / (4 rho G)*).
 
         Sign convention
         ---------------
@@ -421,7 +494,7 @@ class ElastoplasticPistonSolver:
         # Total axial stress: sigma_x = S_x - P
         stress = Sx - pressure
 
-        return {
+        result: dict[str, object] = {
             "density": density,
             "pressure": pressure,
             "velocity": velocity,
@@ -431,3 +504,20 @@ class ElastoplasticPistonSolver:
             "shock_location": shock_loc,
             "elastic_precursor_location": elastic_loc,
         }
+
+        if self.energy_split:
+            assert self.e_th_Y is not None and self.e_el_Y is not None
+            assert self.e_th_2 is not None and self.e_el_2 is not None
+            e_thermal = np.full_like(x_arr, self.e_initial)
+            e_elastic = np.zeros_like(x_arr)
+
+            e_thermal[elastic] = self.e_th_Y
+            e_elastic[elastic] = self.e_el_Y
+
+            e_thermal[shocked] = self.e_th_2
+            e_elastic[shocked] = self.e_el_2
+
+            result["e_thermal"] = e_thermal
+            result["e_elastic"] = e_elastic
+
+        return result
