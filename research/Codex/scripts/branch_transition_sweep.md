@@ -43,8 +43,5 @@ Split mode: `U_se=700411.66`, roots_below=[113287.05], roots_above=[701613.99], 
 python3 research/Codex/scripts/example_branch_sweep.py
 ```
 
-- Plot: `assets/branch_phase_map.png`
-- Report: `scripts/branch_transition_sweep.md`
->>>>>>> Incoming (Background Agent changes)
-=======
->>>>>>> Incoming (Background Agent changes)
+- Plot: `research/Codex/assets/branch_phase_map.png`
+- Report: `research/Codex/scripts/branch_transition_sweep.md`
