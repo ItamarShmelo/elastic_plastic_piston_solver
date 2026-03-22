@@ -59,16 +59,16 @@ Material parameters: $\rho_0 = 2.79\,\mathrm{g/cm^3}$, $C_0 = 5.33 \times 10^5\,
 | Quantity | Original | Energy-split | Rel. Diff (%) |
 |----------|----------|--------------|---------------|
 | $U_{se}$ | $1.02747 \times 10^{6}$ | $978930$ | $4.7246$ |
-| $U_s$ | $752030$ | $797190$ | $6.0050$ |
+| $U_s$ | $1.20564 \times 10^{6}$ | $1.18173 \times 10^{6}$ | $1.9833$ |
 | $\rho^Y$ | $3.95781$ | $3.95781$ | $0.0000$ |
 | $P^Y$ | $7.35756 \times 10^{11}$ | $6.55574 \times 10^{11}$ | $10.8979$ |
 | $v^Y$ | $303172$ | $288848$ | $4.7246$ |
 | $e^Y$ | $4.59567 \times 10^{10}$ | $4.17167 \times 10^{10}$ | $9.2260$ |
-| $\rho_2$ | $5.88185$ | $5.79487$ | $1.4788$ |
-| $P_2$ | $9.96595 \times 10^{11}$ | $9.79798 \times 10^{11}$ | $1.6854$ |
-| $e_2$ | $1.28566 \times 10^{11}$ | $1.17892 \times 10^{11}$ | $8.3027$ |
+| $\rho_2$ | $4.4515$ | $4.50579$ | $1.2197$ |
+| $P_2$ | $1.38035 \times 10^{12}$ | $1.35033 \times 10^{12}$ | $2.1749$ |
+| $e_2$ | $1.0125 \times 10^{11}$ | $1.0125 \times 10^{11}$ | $0.0000$ |
 
-Energy breakdown (split mode): $e_{th}^Y = 3.58271 \times 10^{10}\,\mathrm{erg/g}$, $e_{el}^Y = 5.88962 \times 10^{9}\,\mathrm{erg/g}$, $e_{th,2} = 1.13869 \times 10^{11}\,\mathrm{erg/g}$, $e_{el,2} = 4.02252 \times 10^{9}\,\mathrm{erg/g}$.
+Energy breakdown (split mode): $e_{th}^Y = 3.58271 \times 10^{10}\,\mathrm{erg/g}$, $e_{el}^Y = 5.88962 \times 10^{9}\,\mathrm{erg/g}$, $e_{th,2} = 9.60767 \times 10^{10}\,\mathrm{erg/g}$, $e_{el,2} = 5.17335 \times 10^{9}\,\mathrm{erg/g}$.
 
 ![High-strength comparison](../assets/high_strength_comparison.png)
 

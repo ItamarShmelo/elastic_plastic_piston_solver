@@ -136,8 +136,13 @@ def plot_comparison(
 
     fig, (ax_stress, ax_vel) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
+    PISTON_COLOR = "black"
+    PISTON_LW = 1.8
+
     ax_stress.plot(x, r_orig["stress"], linewidth=LW, label="Original")
     ax_stress.plot(x, r_split["stress"], linewidth=LW, linestyle="--", label="Energy-split")
+    ax_stress.axvline(r_orig["piston_location"], color=PISTON_COLOR,
+                      linestyle="--", linewidth=PISTON_LW, label="Piston")
     ax_stress.set_ylabel(r"$\sigma_x = S_x - P$  (dyn/cm$^2$)", fontsize=LABEL_SIZE)
     ax_stress.set_title(f"{title_prefix} — Stress comparison", fontsize=TITLE_SIZE)
     ax_stress.legend(fontsize=LEGEND_SIZE)
@@ -146,6 +151,8 @@ def plot_comparison(
 
     ax_vel.plot(x, r_orig["velocity"], linewidth=LW, label="Original")
     ax_vel.plot(x, r_split["velocity"], linewidth=LW, linestyle="--", label="Energy-split")
+    ax_vel.axvline(r_orig["piston_location"], color=PISTON_COLOR,
+                   linestyle="--", linewidth=PISTON_LW)
     ax_vel.set_ylabel(r"$v$  (cm/s)", fontsize=LABEL_SIZE)
     ax_vel.set_xlabel(r"$x$  (cm)", fontsize=LABEL_SIZE)
     ax_vel.set_title(f"{title_prefix} — Velocity comparison", fontsize=TITLE_SIZE)

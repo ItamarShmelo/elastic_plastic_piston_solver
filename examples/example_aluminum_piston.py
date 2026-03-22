@@ -77,6 +77,13 @@ def main() -> None:
     ax_stress.set_ylabel(r"$\sigma_x = S_x - P$  (dyn/cm$^2$)", fontsize=LABEL_SIZE)
     ax_stress.set_title(r"$\sigma_x$ at " + t_label, fontsize=TITLE_SIZE)
     ax_stress.axvline(
+        result["piston_location"],
+        color="black",
+        linestyle="--",
+        linewidth=SHOCK_WIDTH,
+        label="Piston",
+    )
+    ax_stress.axvline(
         result["shock_location"],
         color=SHOCK_COLOR,
         linestyle="--",
@@ -97,6 +104,12 @@ def main() -> None:
     ax_vel.plot(x, result["velocity"], linewidth=LINE_WIDTH)
     ax_vel.set_ylabel(r"$v$  (cm/s)", fontsize=LABEL_SIZE)
     ax_vel.set_xlabel(r"$x$  (cm)", fontsize=LABEL_SIZE)
+    ax_vel.axvline(
+        result["piston_location"],
+        color="black",
+        linestyle="--",
+        linewidth=SHOCK_WIDTH,
+    )
     ax_vel.axvline(
         result["shock_location"],
         color=SHOCK_COLOR,
@@ -122,6 +135,7 @@ def main() -> None:
     ax.set_ylabel(r"$\sigma_x = S_x - P$  (dyn/cm$^2$)", fontsize=LABEL_SIZE)
     ax.set_xlabel(r"$x$  (cm)", fontsize=LABEL_SIZE)
     ax.set_title(r"$\sigma_x$ at " + t_label, fontsize=TITLE_SIZE)
+    ax.axvline(result["piston_location"], color="black", linestyle="--", linewidth=SHOCK_WIDTH, label="Piston")
     ax.axvline(result["shock_location"], color=SHOCK_COLOR, linestyle="--", linewidth=SHOCK_WIDTH, label="Plastic shock")
     ax.axvline(result["elastic_precursor_location"], color=PRECURSOR_COLOR, linestyle=":", linewidth=SHOCK_WIDTH, label="Elastic precursor")
     ax.legend(fontsize=LEGEND_SIZE)
@@ -137,6 +151,7 @@ def main() -> None:
     ax.set_ylabel(r"$v$  (cm/s)", fontsize=LABEL_SIZE)
     ax.set_xlabel(r"$x$  (cm)", fontsize=LABEL_SIZE)
     ax.set_title(r"$v$ at " + t_label, fontsize=TITLE_SIZE)
+    ax.axvline(result["piston_location"], color="black", linestyle="--", linewidth=SHOCK_WIDTH, label="Piston")
     ax.axvline(result["shock_location"], color=SHOCK_COLOR, linestyle="--", linewidth=SHOCK_WIDTH, label="Plastic shock")
     ax.axvline(result["elastic_precursor_location"], color=PRECURSOR_COLOR, linestyle=":", linewidth=SHOCK_WIDTH, label="Elastic precursor")
     ax.legend(fontsize=LEGEND_SIZE)
