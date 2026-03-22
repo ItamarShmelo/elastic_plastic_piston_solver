@@ -217,11 +217,11 @@ def main() -> None:
     # Case 3: High-strength material (CGS) — large Y_0/G
     # ------------------------------------------------------------------
     hs_kw = dict(
-        rho_0=2.79, C_0=5.33e5, s=1.34, Gamma_0=2.0,
-        G=2.86e11, Y_0=2.0e11, e_initial=0.0, v_piston=450000.0,
+        rho_0=2.79, C_0=5.0e4, s=1.2, Gamma_0=2.5,
+        G=5.0e10, Y_0=2.0e10, e_initial=0.0, v_piston=40000.0,
     )
     s3_orig, s3_split, rows_hs = compare_solvers(
-        "Case 3: High-strength material", hs_kw, "(CGS, Y_0/G = 0.70)",
+        "Case 3: High-strength material", hs_kw, "(CGS, Y_0/G = 0.40)",
     )
     plot_comparison(s3_orig, s3_split, t=0.3e-6,
                     title_prefix=r"High-strength ($Y_0/G=0.70$)",
@@ -321,17 +321,17 @@ def _build_report(
     sections.append(
         "To demonstrate a regime where the energy-split mode differs "
         "significantly, we use an artificial high-strength material with "
-        "$Y_0 / G = 0.70$.\n"
+        "$Y_0 / G = 0.40$.\n"
     )
     sections.append(
         "Material parameters: "
         "$\\rho_0 = 2.79\\,\\mathrm{g/cm^3}$, "
-        "$C_0 = 5.33 \\times 10^5\\,\\mathrm{cm/s}$, "
-        "$s = 1.34$, "
-        "$\\Gamma_0 = 2$, "
-        "$G = 2.86 \\times 10^{11}\\,\\mathrm{dyn/cm^2}$, "
-        "$Y_0 = 2.0 \\times 10^{11}\\,\\mathrm{dyn/cm^2}$, "
-        "$v_{piston} = 4.5 \\times 10^5\\,\\mathrm{cm/s}$.\n"
+        "$C_0 = 5.0 \\times 10^4\\,\\mathrm{cm/s}$, "
+        "$s = 1.2$, "
+        "$\\Gamma_0 = 2.5$, "
+        "$G = 5.0 \\times 10^{10}\\,\\mathrm{dyn/cm^2}$, "
+        "$Y_0 = 2.0 \\times 10^{10}\\,\\mathrm{dyn/cm^2}$, "
+        "$v_{piston} = 4.0 \\times 10^4\\,\\mathrm{cm/s}$.\n"
     )
     sections.append(build_markdown_table(rows_hs))
     sections.append("")

@@ -455,45 +455,45 @@ region** (behind the plastic shock), the **elastic region** (between the
 plastic shock and the elastic precursor), and the **initial undisturbed
 region** (ahead of the elastic precursor).
 
-### High-strength case ($Y_0/G = 0.70$) — stress and velocity comparison
+### High-strength case ($Y_0/G = 0.40$) — stress and velocity comparison
 
 ![High-strength comparison](assets/high_strength_comparison.png)
 
 ### Mie-Gruneisen EOS — all three regimes
 
-Fictitious material: $\rho_0 = 4$, $C_0 = 3 \times 10^5$, $s = 1.3$,
-$\Gamma_0 = 1.5$. Each plot overlays the original and energy-split
+Fictitious material: $\rho_0 = 4$, $C_0 = 7.5 \times 10^4$, $s = 1.3$,
+$\Gamma_0 = 2$. Each plot overlays the original and energy-split
 stress profiles.
 
-**Elastic wave** ($G = 2 \times 10^{11}$, $Y_0 = 5 \times 10^{10}$,
-$v_{piston} = 40000$):
+**Elastic wave** ($G = 2 \times 10^{11}$, $Y_0 = 1.6 \times 10^{11}$,
+$v_{piston} = 80000$):
 
 ![MG Elastic](assets/mg_elastic.png)
 
 **Plastic shock and elastic wave** ($G = 2 \times 10^{11}$,
-$Y_0 = 2 \times 10^{10}$, $v_{piston} = 22000$):
+$Y_0 = 1 \times 10^{11}$, $v_{piston} = 90000$):
 
 ![MG Two-wave](assets/mg_two_wave.png)
 
-**Plastic wave** ($G = 2 \times 10^{11}$, $Y_0 = 5 \times 10^{10}$,
-$v_{piston} = 80000$):
+**Plastic wave** ($G = 2 \times 10^{11}$, $Y_0 = 1 \times 10^{11}$,
+$v_{piston} = 500000$):
 
 ![MG Plastic wave](assets/mg_plastic_wave.png)
 
 ### Ideal Gas EOS — all three regimes
 
-Fictitious material: $\rho_0 = 2$, $\gamma = 3$, $G = 10^8$,
-$Y_0 = 10^7$, $e_{initial} = 10^6$.
+Fictitious material: $\rho_0 = 2$, $\gamma = 4$, $G = 10^8$,
+$Y_0 = 3 \times 10^7$, $e_{initial} = 0$.
 
-**Elastic wave** ($v_{piston} = 300$):
+**Elastic wave** ($v_{piston} = 1100$):
 
 ![IG Elastic](assets/ig_elastic.png)
 
-**Plastic shock and elastic wave** ($v_{piston} = 1000$):
+**Plastic shock and elastic wave** ($v_{piston} = 2000$):
 
 ![IG Two-wave](assets/ig_two_wave.png)
 
-**Plastic wave** ($v_{piston} = 6000$):
+**Plastic wave** ($v_{piston} = 10000$):
 
 ![IG Plastic wave](assets/ig_plastic_wave.png)
 

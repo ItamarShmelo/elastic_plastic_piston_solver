@@ -52,23 +52,23 @@ Energy breakdown (split mode): $e_{th}^Y = 77788.7\,\mathrm{erg/g}$, $e_{el}^Y =
 
 ## Case 3: High-Strength Material
 
-To demonstrate a regime where the energy-split mode differs significantly, we use an artificial high-strength material with $Y_0 / G = 0.70$.
+To demonstrate a regime where the energy-split mode differs significantly, we use an artificial high-strength material with $Y_0 / G = 0.40$.
 
-Material parameters: $\rho_0 = 2.79\,\mathrm{g/cm^3}$, $C_0 = 5.33 \times 10^5\,\mathrm{cm/s}$, $s = 1.34$, $\Gamma_0 = 2$, $G = 2.86 \times 10^{11}\,\mathrm{dyn/cm^2}$, $Y_0 = 2.0 \times 10^{11}\,\mathrm{dyn/cm^2}$, $v_{piston} = 4.5 \times 10^5\,\mathrm{cm/s}$.
+Material parameters: $\rho_0 = 2.79\,\mathrm{g/cm^3}$, $C_0 = 5.0 \times 10^4\,\mathrm{cm/s}$, $s = 1.2$, $\Gamma_0 = 2.5$, $G = 5.0 \times 10^{10}\,\mathrm{dyn/cm^2}$, $Y_0 = 2.0 \times 10^{10}\,\mathrm{dyn/cm^2}$, $v_{piston} = 4.0 \times 10^4\,\mathrm{cm/s}$.
 
 | Quantity | Original | Energy-split | Rel. Diff (%) |
 |----------|----------|--------------|---------------|
-| $U_{se}$ | $1.02747 \times 10^{6}$ | $978930$ | $4.7246$ |
-| $U_s$ | $1.20564 \times 10^{6}$ | $1.18173 \times 10^{6}$ | $1.9833$ |
-| $\rho^Y$ | $3.95781$ | $3.95781$ | $0.0000$ |
-| $P^Y$ | $7.35756 \times 10^{11}$ | $6.55574 \times 10^{11}$ | $10.8979$ |
-| $v^Y$ | $303172$ | $288848$ | $4.7246$ |
-| $e^Y$ | $4.59567 \times 10^{10}$ | $4.17167 \times 10^{10}$ | $9.2260$ |
-| $\rho_2$ | $4.4515$ | $4.50579$ | $1.2197$ |
-| $P_2$ | $1.38035 \times 10^{12}$ | $1.35033 \times 10^{12}$ | $2.1749$ |
-| $e_2$ | $1.0125 \times 10^{11}$ | $1.0125 \times 10^{11}$ | $0.0000$ |
+| $U_{se}$ | $201334$ | $177263$ | $11.9555$ |
+| $U_s$ | $177574$ | $163430$ | $7.9648$ |
+| $\rho^Y$ | $3.40771$ | $3.40771$ | $0.0000$ |
+| $P^Y$ | $7.16708 \times 10^{9}$ | $2.55824 \times 10^{9}$ | $64.3058$ |
+| $v^Y$ | $36495.7$ | $32132.4$ | $11.9555$ |
+| $e^Y$ | $6.65967 \times 10^{8}$ | $5.16246 \times 10^{8}$ | $22.4817$ |
+| $\rho_2$ | $3.49452$ | $3.62493$ | $3.7318$ |
+| $P_2$ | $8.8518 \times 10^{9}$ | $6.07839 \times 10^{9}$ | $31.3316$ |
+| $e_2$ | $8.2154 \times 10^{8}$ | $8.26635 \times 10^{8}$ | $0.6202$ |
 
-Energy breakdown (split mode): $e_{th}^Y = 3.58271 \times 10^{10}\,\mathrm{erg/g}$, $e_{el}^Y = 5.88962 \times 10^{9}\,\mathrm{erg/g}$, $e_{th,2} = 9.60767 \times 10^{10}\,\mathrm{erg/g}$, $e_{el,2} = 5.17335 \times 10^{9}\,\mathrm{erg/g}$.
+Energy breakdown (split mode): $e_{th}^Y = 1.24977 \times 10^{8}\,\mathrm{erg/g}$, $e_{el}^Y = 3.91269 \times 10^{8}\,\mathrm{erg/g}$, $e_{th,2} = 4.58811 \times 10^{8}\,\mathrm{erg/g}$, $e_{el,2} = 3.67824 \times 10^{8}\,\mathrm{erg/g}$.
 
 ![High-strength comparison](../assets/high_strength_comparison.png)
 

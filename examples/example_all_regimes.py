@@ -3,8 +3,8 @@
 Each figure overlays the original (no split) and energy-split stress
 profiles with vertical dashed lines marking shock and precursor locations.
 
-Mie-Gruneisen base: rho_0=4, C_0=3e5, s=1.3, Gamma_0=1.5
-Ideal Gas:          rho_0=2, gamma=3, G=1e8, Y_0=1e7, e_initial=1e6
+Mie-Gruneisen base: rho_0=4, C_0=7.5e4, s=1.3, Gamma_0=2.0
+Ideal Gas:          rho_0=2, gamma=4, G=1e8, Y_0=3e7, e_initial=0
 
 Run:
     python examples/example_all_regimes.py
@@ -31,43 +31,43 @@ CASES: list[dict] = [
     dict(
         label="MG Elastic",
         filename="mg_elastic",
-        params=dict(rho_0=4, C_0=3e5, s=1.3, Gamma_0=1.5,
-                    G=2e11, Y_0=5e10, e_initial=0.0, v_piston=40000.0),
+        params=dict(rho_0=4, C_0=7.5e4, s=1.3, Gamma_0=2.0,
+                    G=2e11, Y_0=1.6e11, e_initial=0.0, v_piston=80000.0),
         expected=WaveStructure.ELASTIC_WAVE,
     ),
     dict(
         label="MG Two-wave",
         filename="mg_two_wave",
-        params=dict(rho_0=4, C_0=3e5, s=1.3, Gamma_0=1.5,
-                    G=2e11, Y_0=2e10, e_initial=0.0, v_piston=22000.0),
+        params=dict(rho_0=4, C_0=7.5e4, s=1.3, Gamma_0=2.0,
+                    G=2e11, Y_0=1e11, e_initial=0.0, v_piston=90000.0),
         expected=WaveStructure.PLASTIC_SHOCK_AND_ELASTIC_WAVE,
     ),
     dict(
         label="MG Plastic wave",
         filename="mg_plastic_wave",
-        params=dict(rho_0=4, C_0=3e5, s=1.3, Gamma_0=1.5,
-                    G=2e11, Y_0=5e10, e_initial=0.0, v_piston=80000.0),
+        params=dict(rho_0=4, C_0=7.5e4, s=1.3, Gamma_0=2.0,
+                    G=2e11, Y_0=1e11, e_initial=0.0, v_piston=500000.0),
         expected=WaveStructure.PLASTIC_WAVE,
     ),
     dict(
         label="IG Elastic",
         filename="ig_elastic",
-        params=dict(rho_0=2, gamma_ideal_gas=3.0,
-                    G=1e8, Y_0=1e7, e_initial=1e6, v_piston=300.0),
+        params=dict(rho_0=2, gamma_ideal_gas=4.0,
+                    G=1e8, Y_0=3e7, e_initial=0.0, v_piston=1100.0),
         expected=WaveStructure.ELASTIC_WAVE,
     ),
     dict(
         label="IG Two-wave",
         filename="ig_two_wave",
-        params=dict(rho_0=2, gamma_ideal_gas=3.0,
-                    G=1e8, Y_0=1e7, e_initial=1e6, v_piston=1000.0),
+        params=dict(rho_0=2, gamma_ideal_gas=4.0,
+                    G=1e8, Y_0=3e7, e_initial=0.0, v_piston=2000.0),
         expected=WaveStructure.PLASTIC_SHOCK_AND_ELASTIC_WAVE,
     ),
     dict(
         label="IG Plastic wave",
         filename="ig_plastic_wave",
-        params=dict(rho_0=2, gamma_ideal_gas=3.0,
-                    G=1e8, Y_0=1e7, e_initial=1e6, v_piston=6000.0),
+        params=dict(rho_0=2, gamma_ideal_gas=4.0,
+                    G=1e8, Y_0=3e7, e_initial=0.0, v_piston=10000.0),
         expected=WaveStructure.PLASTIC_WAVE,
     ),
 ]
