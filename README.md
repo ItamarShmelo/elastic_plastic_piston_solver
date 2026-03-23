@@ -15,7 +15,7 @@ wave structures:
 
 | Wave structure | Condition | Description |
 |---|---|---|
-| **Elastic wave** | $v_{piston} \leq v^{Y}$ | Piston velocity is at or below the elastic-limit particle velocity; only an elastic precursor propagates. A full 0-to-E Rankine-Hugoniot solve is performed with the actual sub-yield deviatoric stress $S_x^E = \tfrac{4}{3}G\ln(\rho_0/\rho_E)$ and elastic energy $e_{el}^E = 3S_x^{E,2}/(8\rho_E G)$. |
+| **Elastic wave** | $v_{piston} \leq v^{Y}$ | Piston velocity is at or below the elastic-limit particle velocity; only an elastic precursor propagates. A full 0-to-E Rankine-Hugoniot solve is performed with the actual sub-yield deviatoric stress $S_x^E = \tfrac{4}{3}G\ln(\rho_0/\rho_E)$ and work-integral elastic energy. |
 | **Plastic shock and elastic wave** | $U_{s,02} \leq U_{se}$ | Standard two-wave regime: a plastic shock trailed by an elastic precursor. The direct 0-to-2 shock speed does not overrun the elastic precursor. |
 | **Plastic wave** | $U_{s,02} > U_{se}$ | A single plastic shock with no separate elastic precursor. The direct 0-to-2 shock speed overruns the elastic precursor, so the Rankine-Hugoniot jump is taken directly from the initial state to the shocked state. |
 
@@ -77,7 +77,27 @@ python examples/example_aluminum_piston.py
 The solver supports an optional **energy-split mode** that decomposes the
 internal energy into thermal and elastic contributions:
 
-$$e = e_{th} + e_{el}, \qquad e_{el} = \frac{\boldsymbol{S}:\boldsymbol{S}}{4\rho G}$$
+$$e = e_{th} + e_{el}$$
+
+The elastic energy is computed from the **work integral** of the elastic
+deviatoric power $\boldsymbol{S}:\boldsymbol{D}^{el}$:
+
+$$e_{el}(\rho) = \frac{4G}{3\rho_0}\left[1 - (1+a)\,e^{-a}\right], \qquad a = \ln\frac{\rho}{\rho_0}$$
+
+This is the integral $\int_{\rho_0}^{\rho} (-S_x)\,d\rho'/\rho'^2$ with
+$S_x = \tfrac{4}{3}G\ln(\rho_0/\rho')$.  It matches the thermal energy
+PDE used in hydrocodes ($\rho\,de_{th}/dt = \rho\mathcal{P}_{plast} - P\nabla\cdot\vec{u}$),
+where only pressure work and plastic dissipation heat the material.
+
+During plastic deformation the deviatoric stress is constant at yield
+($\boldsymbol{D}^{el} = 0$), so $e_{el}$ is frozen at its yield-point
+value.
+
+> **Note:** The previous formulation used the state function
+> $e_{el} = \boldsymbol{S}:\boldsymbol{S}/(4\rho G)$, which differs from
+> the work integral for finite elastic strains ($Y_0/(2G) \gtrsim 0.05$).
+> For typical metals ($Y_0/(2G) \sim 10^{-3}$) the two are equivalent to
+> leading order.
 
 In this mode the EOS receives only the thermal part, $P(e_{th}, \rho)$,
 rather than the total energy.  Enable it by passing `energy_split=True`:
@@ -97,13 +117,19 @@ the usual fields.  The `"energy"` key continues to hold the total energy.
 
 ### Modified equations
 
+Let $e_{el}^Y = \frac{4G}{3\rho_0}\left[1 - \left(1 + \frac{Y_0}{2G}\right)e^{-Y_0/(2G)}\right]$ denote the work-integral elastic energy at yield.
+
 The yield-energy root-finding equation becomes:
 
-$$f_{Y}(e_{th}^{Y}) = e_{th}^{Y} + \frac{Y_0^2}{6\rho^{Y}G} - e_0 - \frac{1}{2\rho^{Y}\rho_0}\left(P^{Y}(e_{th}^{Y},\rho^{Y}) + \tfrac{2}{3}Y_0\right)(\rho^{Y} - \rho_0)$$
+$$f_{Y}(e_{th}^{Y}) = e_{th}^{Y} + e_{el}^Y - e_0 - \frac{1}{2\rho^{Y}\rho_0}\left(P^{Y}(e_{th}^{Y},\rho^{Y}) + \tfrac{2}{3}Y_0\right)(\rho^{Y} - \rho_0)$$
 
-and the shocked thermal energy is:
+The shocked thermal energy uses $e_{el}$ frozen at yield (since $\boldsymbol{D}^{el} = 0$ during plastic deformation):
 
-$$e_{th,2} = e_{th}^{Y} + \frac{Y_0^2}{6\rho^{Y}G} + \frac{1}{2\rho^{Y}\rho_2}\left(P^{Y} + P_2 + \tfrac{4}{3}Y_0\right)(\rho_2 - \rho^{Y}) - \frac{Y_0^2}{6\rho_2 G}$$
+$$e_{th,2} = e_{th}^{Y} + e_{el}^Y + \frac{1}{2\rho^{Y}\rho_2}\left(P^{Y} + P_2 + \tfrac{4}{3}Y_0\right)(\rho_2 - \rho^{Y}) - e_{el}^Y$$
+
+which simplifies to:
+
+$$e_{th,2} = e_{th}^{Y} + \frac{1}{2\rho^{Y}\rho_2}\left(P^{Y} + P_2 + \tfrac{4}{3}Y_0\right)(\rho_2 - \rho^{Y})$$
 
 See the [Derivation of the Analytic Solution](#derivation-of-the-analytic-solution)
 section below for the full derivation.
@@ -169,7 +195,7 @@ $$\rho^{Y}=\rho_{0}e^{\frac{Y_{0}}{2G}}$$
 
 The Hugoniot relations (from Wilkins).
 
-$$U_{shock}^{2}=\frac{1}{\rho_{0}}\frac{\sigma_{1}-\sigma_{0}}{\left(1-\frac{\rho_{0}}{\rho_{1}}\right)}=\frac{\rho_{1}\left(\sigma_{1}-\sigma_{0}\right)}{\rho_{0}\left(\rho_{1}-\rho_{0}\right)}$$
+$$U_{shock}^{2}=-\frac{1}{\rho_{0}}\frac{\sigma_{1}-\sigma_{0}}{\left(1-\frac{\rho_{0}}{\rho_{1}}\right)}=\frac{\rho_{1}\left(\sigma_{0}-\sigma_{1}\right)}{\rho_{0}\left(\rho_{1}-\rho_{0}\right)}$$
 
 where, $\sigma\equiv\sigma_{x}$ and $\sigma=S-P$ since
 $\sigma_{0}\approx0$,
@@ -182,7 +208,7 @@ $$U_{se}^{2}=\frac{\rho^{Y}\sigma^{Y}}{\rho_{0}(\rho_{0}-\rho^{Y})}=-\frac{\rho^
 
 The internal energy from the Hugoniot relation
 
-$$e_{1}-e_{0}=-\frac{1}{2}\left(\sigma_{1}+\sigma_{0}\right)\left(1-\frac{\rho_{0}}{\rho_{1}}\right)$$
+$$e_{1}-e_{0}=-\frac{1}{2\rho_0}\left(\sigma_{1}+\sigma_{0}\right)\left(1-\frac{\rho_{0}}{\rho_{1}}\right)$$
 
 Or
 
@@ -231,7 +257,7 @@ The residual for root-finding is:
 $$f_S(U_s) = P_2(U_s) - P_{eos}\left(e_2(U_s),\;\rho_2(U_s)\right) = 0$$
 
 When `energy_split=True`, the EOS receives
-$e_{th,2} = e_2 - Y_0^2/(6\rho_2 G)$.
+$e_{th,2} = e_2 - e_{el}^Y$ (elastic energy frozen at yield).
 
 ### Elastic wave regime: 0-to-E jump
 
@@ -242,14 +268,14 @@ stress is **not** at yield:
 
 $$S_x^E = \frac{4}{3}G\ln\frac{\rho_0}{\rho_E}$$
 
-The elastic energy uses the actual deviatoric stress rather than the
-yield strength:
+The elastic energy is computed from the work integral at the sub-yield
+density $\rho_E$:
 
-$$\boldsymbol{S}:\boldsymbol{S} = \frac{3}{2}S_x^{E,2},\qquad e_{el}^E = \frac{\boldsymbol{S}:\boldsymbol{S}}{4\rho_E G} = \frac{3 S_x^{E,2}}{8\rho_E G}$$
+$$e_{el}^E = \frac{4G}{3\rho_0}\left[1 - (1+a_E)\,e^{-a_E}\right], \qquad a_E = \ln\frac{\rho_E}{\rho_0}$$
 
-At yield ($\rho_E = \rho^Y$), these reduce to $S_x^Y = -\tfrac{2}{3}Y_0$
-and $e_{el}^Y = Y_0^2/(6\rho^Y G)$, ensuring continuity between the
-elastic and two-wave regimes.
+At yield ($\rho_E = \rho^Y$, $a_E = Y_0/(2G)$), this gives the elastic
+energy at the elastic limit, ensuring continuity between the elastic and
+two-wave regimes.
 
 Given elastic shock speed $U_{se}$, the Rankine-Hugoniot jump conditions
 from state 0 to state E are:
@@ -265,7 +291,7 @@ The residual for root-finding is:
 $$f_{E}(U_{se}) = P_E - P_{eos}\left(e_{eos},\;\rho_E\right) = 0$$
 
 where $e_{eos} = e_E$ when `energy_split=False`, or
-$e_{eos} = e_E - 3 S_x^{E,2}/(8\rho_E G)$ when `energy_split=True`.
+$e_{eos} = e_E - e_{el}^E$ when `energy_split=True`.
 
 The scan range is $v_{piston} \cdot 1.001$ to
 $\max(2 U_{se}^{yield},\; 10\, v_{piston})$, with the **largest** root
@@ -291,7 +317,9 @@ $$f_{Y}\left(e^{Y}\right)=e^{Y}-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\lef
 
 or with the energy-split mode, solve for $e_{th}^{Y}$:
 
-$$f_{Y}\left(e_{th}^{Y}\right)=e_{th}^{Y}+\frac{Y_{0}^{2}}{6\rho^{Y}G}-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\left(e_{th}^{Y},\rho^{Y}\right)+\frac{2}{3}Y_{0}\right)\left(\rho^{Y}-\rho_{0}\right)$$
+$$f_{Y}\left(e_{th}^{Y}\right)=e_{th}^{Y}+e_{el}^Y-e_{0}-\frac{1}{2\rho^{Y}\rho_{0}}\left(P^{Y}\left(e_{th}^{Y},\rho^{Y}\right)+\frac{2}{3}Y_{0}\right)\left(\rho^{Y}-\rho_{0}\right)$$
+
+where $e_{el}^Y = \frac{4G}{3\rho_0}\left[1 - \left(1 + \frac{Y_0}{2G}\right)e^{-Y_0/(2G)}\right]$.
 
 4.  Calculate $U_{se}$
 
@@ -325,9 +353,9 @@ $$\rho_{2}=\rho^{Y}\frac{U_{s}-v^{Y}}{U_{s}-v_{2}}$$
 
 $$e_{2}=e^{Y}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)$$
 
-or with the energy-split mode, use $e_{th,2}$ in the EOS:
+or with the energy-split mode, use $e_{th,2}$ in the EOS (elastic energy frozen at yield):
 
-$$e_{th,2}=e_{th}^{Y}+\frac{Y_{0}^{2}}{6\rho^{Y}G}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)-\frac{Y_{0}^{2}}{6\rho_{2}G}$$
+$$e_{th,2}=e_{th}^{Y}+\frac{1}{2\rho^{Y}\rho_{2}}\left(P^{Y}+P_{2}+\frac{4}{3}Y_{0}\right)\left(\rho_{2}-\rho^{Y}\right)$$
 
 7b. **One-wave U_s solve (0-to-2 jump).** Build the direct 0-to-2
     residual and scan from $v_{piston} \cdot 1.001$ to

@@ -206,7 +206,8 @@ class ElastoplasticPistonSolver:
     energy_split : bool
         If ``True``, split the internal energy into thermal and elastic
         components and feed only the thermal part to the EOS.  The elastic
-        energy is ``S:S / (4 rho G)``.  Default is ``False``.
+        energy is computed from the work integral of deviatoric power.
+        Default is ``False``.
     gamma_ideal_gas : float, optional
         Ideal-gas adiabatic index.  Mutually exclusive with ``C_0``, ``s``,
         ``Gamma_0``.  Internally mapped to Mie-Gruneisen constants
@@ -307,6 +308,22 @@ class ElastoplasticPistonSolver:
             e, rho, self.rho_0, self.C_0, self.s, self.Gamma_0,
         )
 
+    def _elastic_energy_work_integral(self, rho: float) -> float:
+        """Elastic energy from the integral of deviatoric power S:D^el.
+
+        Computes  e_el(rho) = (4G)/(3 rho_0) * [1 - (1 + a) exp(-a)]
+
+        where a = ln(rho / rho_0).  This is the integral of
+        (-S_x) d(rho) / rho^2 from rho_0 to rho, with the hypoelastic
+        constitutive law S_x = (4/3) G ln(rho_0 / rho).
+
+        For small a (typical metals, Y0/(2G) ~ 1e-3), this reduces to
+        the state function S:S/(4 rho G) to leading order.  The two
+        diverge at finite strains (Y0/(2G) >= 0.05).
+        """
+        a: float = math.log(rho / self.rho_0)
+        return (4.0 * self.G) / (3.0 * self.rho_0) * (1.0 - (1.0 + a) * math.exp(-a))
+
     # -- core algorithm ----------------------------------------------------
 
     def _solve_yield_and_precursor(self) -> None:
@@ -321,7 +338,7 @@ class ElastoplasticPistonSolver:
         )
 
         # Step 3 -- yield energy (root-finding)
-        e_el_Y: float = self.Y_0**2 / (6.0 * self.rho_Y * self.G)
+        e_el_Y: float = self._elastic_energy_work_integral(self.rho_Y)
         e_offset: float = e_el_Y if self.energy_split else 0.0
 
         e_lo: float = self.e_initial
@@ -380,8 +397,8 @@ class ElastoplasticPistonSolver:
             P_E   = rho_0 U_se v_piston + S_x^E
             e_E   = e_0 + 1/(2 rho_0 rho_E)(P_E - S_x^E)(rho_E - rho_0)
 
-        The elastic energy is S:S/(4 rho G) = 3 S_x^2 / (8 rho G), which
-        reduces to Y_0^2/(6 rho G) at yield.
+        The elastic energy is the work integral of deviatoric power
+        S:D^el, computed via ``_elastic_energy_work_integral(rho)``.
 
         After solving, the yield-point attributes (rho_Y, P_Y, e_Y, U_se,
         v_Y) are overwritten with the actual sub-yield elastic state.
@@ -398,7 +415,7 @@ class ElastoplasticPistonSolver:
                 * (P_E - Sx_E) * (rho_E - self.rho_0)
             )
             if self.energy_split:
-                e_eos = e_E - 1.5 * Sx_E**2 / (4.0 * rho_E * self.G)
+                e_eos = e_E - self._elastic_energy_work_integral(rho_E)
             else:
                 e_eos = e_E
             return P_E - self._eos(e_eos, rho_E)
@@ -429,9 +446,7 @@ class ElastoplasticPistonSolver:
         self.v_Y = self.v_piston
 
         if self.energy_split:
-            self.e_el_Y = (
-                1.5 * self.Sx_precursor**2 / (4.0 * self.rho_Y * self.G)
-            )
+            self.e_el_Y = self._elastic_energy_work_integral(self.rho_Y)
             self.e_th_Y = self.e_Y - self.e_el_Y
 
         assert math.isfinite(self.U_se), f"Non-finite U_se={self.U_se}"
@@ -463,11 +478,7 @@ class ElastoplasticPistonSolver:
                 + 0.5 / (self.rho_0 * rho_2)
                 * (P_2 + 2.0 / 3.0 * self.Y_0) * (rho_2 - self.rho_0)
             )
-            e_eos = (
-                (e_2 - self.Y_0**2 / (6.0 * rho_2 * self.G))
-                if self.energy_split
-                else e_2
-            )
+            e_eos = (e_2 - self.e_el_Y) if self.energy_split else e_2
             return P_2 - self._eos(e_eos, rho_2)
 
         roots_02 = _scan_sign_change_roots(
@@ -503,10 +514,7 @@ class ElastoplasticPistonSolver:
                     * (self.P_Y + P_2 + 4.0 / 3.0 * self.Y_0)
                     * (rho_2 - self.rho_Y)
                 )
-                e_eos = (
-                    (e_2 - self.Y_0**2 / (6.0 * rho_2 * self.G))
-                    if self.energy_split else e_2
-                )
+                e_eos = (e_2 - self.e_el_Y) if self.energy_split else e_2
                 return P_2 - self._eos(e_eos, rho_2)
 
             roots_y2 = _scan_sign_change_roots(
@@ -551,7 +559,7 @@ class ElastoplasticPistonSolver:
         )
 
         if self.energy_split:
-            self.e_el_2 = self.Y_0**2 / (6.0 * self.rho_2 * self.G)
+            self.e_el_2 = self.e_el_Y
             self.e_th_2 = self.e_2 - self.e_el_2
 
         assert math.isfinite(self.P_2), f"Non-finite P_2={self.P_2}"
@@ -580,7 +588,7 @@ class ElastoplasticPistonSolver:
         )
 
         if self.energy_split:
-            self.e_el_2 = self.Y_0**2 / (6.0 * self.rho_2 * self.G)
+            self.e_el_2 = self.e_el_Y
             self.e_th_2 = self.e_2 - self.e_el_2
 
         assert math.isfinite(self.P_2), f"Non-finite P_2={self.P_2}"
@@ -700,7 +708,8 @@ class ElastoplasticPistonSolver:
 
             * ``"e_thermal"`` -- numpy array, thermal specific energy.
             * ``"e_elastic"`` -- numpy array, elastic specific energy
-              (*S:S / (4 rho G)*).
+              (work-integral formulation; frozen at yield value for
+              plastic states).
 
         Notes
         -----
