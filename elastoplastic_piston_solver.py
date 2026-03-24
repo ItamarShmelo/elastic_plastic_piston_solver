@@ -610,8 +610,8 @@ class ElastoplasticPistonSolver:
             self.equivalent_plastic_strain: float | None = None
         else:
             self._classify_and_solve_shock()
-            self.equivalent_plastic_strain = math.log(
-                self.rho_2 / self.rho_Y
+            self.equivalent_plastic_strain = (
+                2.0 / 3.0 * math.log(self.rho_2 / self.rho_Y)
             )
 
         self._validate()
@@ -711,8 +711,8 @@ class ElastoplasticPistonSolver:
             * ``"stress"``   -- numpy array, total axial stress
               *sigma_x = S_x - P* at each *x_i*.
             * ``"equivalent_plastic_strain"`` -- numpy array, von Mises
-              equivalent plastic strain *ln(rho / rho_Y)* in yielded
-              regions, zero elsewhere.
+              equivalent plastic strain *(2/3) ln(rho / rho_Y)* in
+              yielded regions, zero elsewhere.
             * ``"shock_location"``             -- float or ``np.nan``,
               plastic shock position *U_s * t*.  ``np.nan`` when no plastic
               shock exists (elastic-only regime).

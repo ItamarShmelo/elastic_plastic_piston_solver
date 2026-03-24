@@ -303,44 +303,58 @@ The equivalent (von Mises) plastic strain is defined by
 
 $$\bar\varepsilon^{pl} = \int_0^t \sqrt{\tfrac{2}{3}\,\boldsymbol{D}^{pl}:\boldsymbol{D}^{pl}}\;dt$$
 
-For uniaxial strain the plastic strain tensor is traceless
-($\mathrm{tr}\,\boldsymbol\varepsilon^{pl}=0$) with transverse symmetry,
+The hypoelastic J2 plasticity model evolves the deviatoric stress via
+
+$$\overset{\nabla}{\boldsymbol{S}} = 2G\left(\bar{\boldsymbol{D}} - \boldsymbol{D}^{pl}\right)$$
+
+where $\bar{\boldsymbol{D}} = \boldsymbol{D} - \tfrac13(\nabla\!\cdot\!\boldsymbol{v})\,\boldsymbol{I}$
+is the deviatoric part of the strain-rate.  The plastic strain-rate
+$\boldsymbol{D}^{pl}$ is therefore a deviatoric tensor, and the
+equivalent plastic strain must be computed from this deviatoric
+quantity, not from the total post-yield axial strain.
+
+For uniaxial strain along $y$, the total strain-rate is
+$\boldsymbol{D} = \mathrm{diag}(0,\;\partial v/\partial y,\;0)$, so
+
+$$\bar{\boldsymbol{D}}
+= \mathrm{diag}\!\left(-\tfrac13\frac{\partial v}{\partial y},\;
+\tfrac23\frac{\partial v}{\partial y},\;
+-\tfrac13\frac{\partial v}{\partial y}\right)$$
+
+In the perfectly plastic region the deviatoric stress is clamped at
+yield ($\overset{\nabla}{\boldsymbol{S}}=0$, no spin in 1-D), so
+$\boldsymbol{D}^{pl} = \bar{\boldsymbol{D}}$ and in particular
+
+$$D^{pl}_{yy} = \tfrac23\frac{\partial v}{\partial y}$$
+
+The double contraction is
+$\boldsymbol{D}^{pl}:\boldsymbol{D}^{pl}
+= \tfrac23\left(\frac{\partial v}{\partial y}\right)^2$,
 giving
 
-$$\boldsymbol\varepsilon^{pl}
-= \begin{pmatrix}
-\varepsilon_x^{pl} & 0 & 0\\
-0 & -\tfrac12\varepsilon_x^{pl} & 0\\
-0 & 0 & -\tfrac12\varepsilon_x^{pl}
-\end{pmatrix}$$
+$$\dot{\bar\varepsilon}^{pl}
+= \sqrt{\tfrac{2}{3}\cdot\tfrac{2}{3}}\left|\frac{\partial v}{\partial y}\right|
+= \tfrac{2}{3}\left|\frac{\partial v}{\partial y}\right|$$
 
-The double contraction evaluates to
-$\boldsymbol{D}^{pl}:\boldsymbol{D}^{pl}
-= \tfrac32\left(\dot\varepsilon_x^{pl}\right)^2$,
-so $\bar\varepsilon^{pl} = |\varepsilon_x^{pl}|$ for monotone loading.
+Using the continuity equation
+$\partial v/\partial y = -(\rho)^{-1}\,d\rho/dt$, for monotone
+compression ($d\rho/dt > 0$):
 
-Using the logarithmic strain $\varepsilon_x = \ln(\rho_0/\rho)$ and the
-elastic strain frozen at its yield value
-$\varepsilon_x^{el,Y} = \ln(\rho_0/\rho^Y) = -Y_0/(2G)$, the plastic
-part in the yielded region is
+$$\dot{\bar\varepsilon}^{pl}
+= \frac{2}{3}\frac{1}{\rho}\frac{d\rho}{dt}$$
 
-$$\varepsilon_x^{pl}
-= \varepsilon_x - \varepsilon_x^{el,Y}
-= \ln\!\left(\frac{\rho^Y}{\rho}\right)$$
-
-For monotone compressive loading $\varepsilon_x^{pl}<0$, hence
-$\bar\varepsilon^{pl} = -\varepsilon_x^{pl} = \ln(\rho/\rho^Y)$.
-The equivalent plastic strain as a function of density is therefore
+Integrating from $\rho^Y$ to $\rho$ gives the equivalent plastic
+strain as a function of density:
 
 $$\bar\varepsilon^{pl}(\rho)=
 \begin{cases}
 0, & \rho \le \rho^Y \\[4pt]
-\ln\!\left(\dfrac{\rho}{\rho^Y}\right), & \rho > \rho^Y
+\dfrac{2}{3}\ln\!\left(\dfrac{\rho}{\rho^Y}\right), & \rho > \rho^Y
 \end{cases}$$
 
 In the shocked state 2:
 
-$$\bar\varepsilon^{pl}_2 = \ln\!\left(\frac{\rho_2}{\rho^Y}\right)$$
+$$\bar\varepsilon^{pl}_2 = \frac{2}{3}\ln\!\left(\frac{\rho_2}{\rho^Y}\right)$$
 
 ## Solver Algorithm
 

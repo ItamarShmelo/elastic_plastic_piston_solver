@@ -51,7 +51,7 @@ class TestBaselineRegression:
         assert s.P_2 == pytest.approx(6743696618.642619, rel=1e-6)
         assert s.e_2 == pytest.approx(13707945.33319463, rel=1e-6)
         assert s.equivalent_plastic_strain == pytest.approx(
-            0.003783502307422039, rel=1e-6)
+            0.0025223348716146925, rel=1e-6)
 
     def test_aluminum_split(self):
         s = ElastoplasticPistonSolver(**ALUMINUM, v_piston=5000.0,
@@ -71,7 +71,7 @@ class TestBaselineRegression:
         assert s.e_th_2 == pytest.approx(12295367.590800311, rel=1e-6)
         assert s.e_el_2 == pytest.approx(1407697.7438897172, rel=1e-6)
         assert s.equivalent_plastic_strain == pytest.approx(
-            0.003787581280062725, rel=1e-6)
+            0.0025250541867084834, rel=1e-6)
 
     def test_copper_no_split(self):
         s = ElastoplasticPistonSolver(**COPPER, v_piston=3000.0)
@@ -86,7 +86,7 @@ class TestBaselineRegression:
         assert s.P_2 == pytest.approx(10310547575.542755, rel=1e-6)
         assert s.e_2 == pytest.approx(4778665.872251198, rel=1e-6)
         assert s.equivalent_plastic_strain == pytest.approx(
-            0.006038708233245766, rel=1e-6)
+            0.00402580548883051, rel=1e-6)
 
 
 # ---------------------------------------------------------------------------
@@ -210,7 +210,7 @@ class TestTwoWaveRegime:
                                      energy_split=split)
         assert s.equivalent_plastic_strain > 0
         assert s.equivalent_plastic_strain == pytest.approx(
-            math.log(s.rho_2 / s.rho_Y), rel=1e-12)
+            2.0 / 3.0 * math.log(s.rho_2 / s.rho_Y), rel=1e-12)
 
     def test_solve_output_two_wave(self):
         s = ElastoplasticPistonSolver(**ALUMINUM, v_piston=5000.0)
