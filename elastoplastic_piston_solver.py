@@ -607,8 +607,12 @@ class ElastoplasticPistonSolver:
         if self.v_piston <= self.v_Y:
             self._solve_elastic_wave()
             self.wave_structure = WaveStructure.ELASTIC_WAVE
+            self.equivalent_plastic_strain: float | None = None
         else:
             self._classify_and_solve_shock()
+            self.equivalent_plastic_strain = math.log(
+                self.rho_2 / self.rho_Y
+            )
 
         self._validate()
 
@@ -643,12 +647,18 @@ class ElastoplasticPistonSolver:
                     f"rho_2={self.rho_2}."
                 )
             for name in ("rho_Y", "e_Y", "P_Y", "U_se", "v_Y",
-                         "U_s", "rho_2", "P_2", "e_2"):
+                         "U_s", "rho_2", "P_2", "e_2",
+                         "equivalent_plastic_strain"):
                 val = getattr(self, name)
                 if val is None or not math.isfinite(val):
                     raise ValueError(
                         f"Non-finite or missing quantity: {name}={val}"
                     )
+            if not self.equivalent_plastic_strain > 0:
+                raise ValueError(
+                    f"Two-wave: equivalent_plastic_strain="
+                    f"{self.equivalent_plastic_strain} must be positive."
+                )
 
         elif ws == WaveStructure.PLASTIC_WAVE:
             if not self.rho_2 > self.rho_0:
@@ -656,12 +666,18 @@ class ElastoplasticPistonSolver:
                     f"Plastic wave: rho_2={self.rho_2} must exceed "
                     f"rho_0={self.rho_0}."
                 )
-            for name in ("U_s", "rho_2", "P_2", "e_2"):
+            for name in ("U_s", "rho_2", "P_2", "e_2",
+                         "equivalent_plastic_strain"):
                 val = getattr(self, name)
                 if val is None or not math.isfinite(val):
                     raise ValueError(
                         f"Non-finite or missing quantity: {name}={val}"
                     )
+            if not self.equivalent_plastic_strain > 0:
+                raise ValueError(
+                    f"Plastic wave: equivalent_plastic_strain="
+                    f"{self.equivalent_plastic_strain} must be positive."
+                )
 
     # -- public API --------------------------------------------------------
 
@@ -694,6 +710,9 @@ class ElastoplasticPistonSolver:
               *S_x* at each *x_i*.
             * ``"stress"``   -- numpy array, total axial stress
               *sigma_x = S_x - P* at each *x_i*.
+            * ``"equivalent_plastic_strain"`` -- numpy array, von Mises
+              equivalent plastic strain *ln(rho / rho_Y)* in yielded
+              regions, zero elsewhere.
             * ``"shock_location"``             -- float or ``np.nan``,
               plastic shock position *U_s * t*.  ``np.nan`` when no plastic
               shock exists (elastic-only regime).
@@ -782,9 +801,16 @@ class ElastoplasticPistonSolver:
 
         stress = Sx - pressure
 
+        equiv_pl_strain = np.zeros_like(x_arr)
+        if ws == WaveStructure.PLASTIC_SHOCK_AND_ELASTIC_WAVE:
+            equiv_pl_strain[shocked] = self.equivalent_plastic_strain
+        elif ws == WaveStructure.PLASTIC_WAVE:
+            equiv_pl_strain[shocked] = self.equivalent_plastic_strain
+
         piston_loc: float = self.v_piston * t
         behind_piston = x_arr < piston_loc
-        for arr in (density, pressure, velocity, energy, Sx, stress):
+        for arr in (density, pressure, velocity, energy, Sx, stress,
+                    equiv_pl_strain):
             arr[behind_piston] = np.nan
 
         result: dict[str, object] = {
@@ -794,6 +820,7 @@ class ElastoplasticPistonSolver:
             "energy": energy,
             "Sx": Sx,
             "stress": stress,
+            "equivalent_plastic_strain": equiv_pl_strain,
             "shock_location": shock_loc,
             "elastic_precursor_location": elastic_loc,
             "piston_location": piston_loc,

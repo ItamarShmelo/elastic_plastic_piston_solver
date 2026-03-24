@@ -50,24 +50,28 @@ class TestBaselineRegression:
         assert s.rho_2 == pytest.approx(2.813334832126923, rel=1e-6)
         assert s.P_2 == pytest.approx(6743696618.642619, rel=1e-6)
         assert s.e_2 == pytest.approx(13707945.33319463, rel=1e-6)
+        assert s.equivalent_plastic_strain == pytest.approx(
+            0.003783502307422039, rel=1e-6)
 
     def test_aluminum_split(self):
         s = ElastoplasticPistonSolver(**ALUMINUM, v_piston=5000.0,
                                      energy_split=True)
         assert s.wave_structure == WaveStructure.PLASTIC_SHOCK_AND_ELASTIC_WAVE
         assert s.rho_Y == pytest.approx(2.8027106842157106, rel=1e-10)
-        assert s.e_Y == pytest.approx(4366113.368381748, rel=1e-10)
-        assert s.P_Y == pytest.approx(3638698122.3628507, rel=1e-10)
-        assert s.U_se == pytest.approx(651586.1460142364, rel=1e-10)
-        assert s.v_Y == pytest.approx(2955.0341346190057, rel=1e-10)
-        assert s.U_s == pytest.approx(543895.0428865133, rel=1e-6)
-        assert s.rho_2 == pytest.approx(2.8133462388666866, rel=1e-6)
-        assert s.P_2 == pytest.approx(6739067480.413108, rel=1e-6)
-        assert s.e_2 == pytest.approx(13703037.838047678, rel=1e-6)
-        assert s.e_th_Y == pytest.approx(2960547.6917031687, rel=1e-10)
-        assert s.e_el_Y == pytest.approx(1405565.6766785793, rel=1e-10)
-        assert s.e_th_2 == pytest.approx(12302785.75212566, rel=1e-6)
-        assert s.e_el_2 == pytest.approx(1400252.085922017, rel=1e-6)
+        assert s.e_Y == pytest.approx(4366103.610653991, rel=1e-10)
+        assert s.P_Y == pytest.approx(3638686116.531571, rel=1e-10)
+        assert s.U_se == pytest.approx(651585.4179062786, rel=1e-10)
+        assert s.v_Y == pytest.approx(2955.030832547772, rel=1e-10)
+        assert s.U_s == pytest.approx(543892.4270612809, rel=1e-6)
+        assert s.rho_2 == pytest.approx(2.8133463076661367, rel=1e-6)
+        assert s.P_2 == pytest.approx(6739045507.282562, rel=1e-6)
+        assert s.e_2 == pytest.approx(13703065.334690029, rel=1e-6)
+        assert s.e_th_Y == pytest.approx(2958405.8667642735, rel=1e-10)
+        assert s.e_el_Y == pytest.approx(1407697.7438897172, rel=1e-10)
+        assert s.e_th_2 == pytest.approx(12295367.590800311, rel=1e-6)
+        assert s.e_el_2 == pytest.approx(1407697.7438897172, rel=1e-6)
+        assert s.equivalent_plastic_strain == pytest.approx(
+            0.003787581280062725, rel=1e-6)
 
     def test_copper_no_split(self):
         s = ElastoplasticPistonSolver(**COPPER, v_piston=3000.0)
@@ -81,6 +85,8 @@ class TestBaselineRegression:
         assert s.rho_2 == pytest.approx(8.995396664448483, rel=1e-6)
         assert s.P_2 == pytest.approx(10310547575.542755, rel=1e-6)
         assert s.e_2 == pytest.approx(4778665.872251198, rel=1e-6)
+        assert s.equivalent_plastic_strain == pytest.approx(
+            0.006038708233245766, rel=1e-6)
 
 
 # ---------------------------------------------------------------------------
@@ -141,6 +147,7 @@ class TestElasticOnlyRegime:
         assert s.rho_2 is None
         assert s.P_2 is None
         assert s.e_2 is None
+        assert s.equivalent_plastic_strain is None
 
     def test_v_piston_zero_rejected(self):
         with pytest.raises(ValueError, match="v_piston must be positive"):
@@ -156,8 +163,9 @@ class TestElasticOnlyRegime:
                                      energy_split=split)
         assert s.wave_structure == WaveStructure.ELASTIC_WAVE
         if split:
-            Sx = s.Sx_precursor
-            e_el_expected = 1.5 * Sx**2 / (4.0 * s.rho_Y * s.G)
+            a = math.log(s.rho_Y / s.rho_0)
+            e_el_expected = (4.0 * s.G) / (3.0 * s.rho_0) * (
+                1.0 - (1.0 + a) * math.exp(-a))
             assert s.e_el_Y == pytest.approx(e_el_expected, rel=1e-10)
             assert s.e_th_Y + s.e_el_Y == pytest.approx(s.e_Y, rel=1e-10)
 
@@ -195,6 +203,14 @@ class TestTwoWaveRegime:
         s = ElastoplasticPistonSolver(**ALUMINUM, v_piston=5000.0,
                                      energy_split=split)
         assert s.rho_2 > s.rho_Y > s.rho_0
+
+    @pytest.mark.parametrize("split", [False, True])
+    def test_equivalent_plastic_strain(self, split):
+        s = ElastoplasticPistonSolver(**ALUMINUM, v_piston=5000.0,
+                                     energy_split=split)
+        assert s.equivalent_plastic_strain > 0
+        assert s.equivalent_plastic_strain == pytest.approx(
+            math.log(s.rho_2 / s.rho_Y), rel=1e-12)
 
     def test_solve_output_two_wave(self):
         s = ElastoplasticPistonSolver(**ALUMINUM, v_piston=5000.0)
@@ -427,14 +443,15 @@ class TestOutputContract:
     def test_required_keys(self, solver_and_result):
         _, _, r = solver_and_result
         for key in ("density", "pressure", "velocity", "energy", "Sx",
-                     "stress", "shock_location", "elastic_precursor_location",
+                     "stress", "equivalent_plastic_strain",
+                     "shock_location", "elastic_precursor_location",
                      "piston_location", "wave_structure"):
             assert key in r
 
     def test_array_shapes(self, solver_and_result):
         _, _, r = solver_and_result
         for key in ("density", "pressure", "velocity", "energy", "Sx",
-                     "stress"):
+                     "stress", "equivalent_plastic_strain"):
             assert r[key].shape == (50,)
 
     def test_wave_structure_is_enum(self, solver_and_result):
@@ -446,12 +463,22 @@ class TestOutputContract:
         _, _, r = solver_and_result
         x = np.linspace(0, 1, 50)
         ahead = x >= r["piston_location"]
-        for key in ("density", "pressure", "velocity", "energy"):
+        for key in ("density", "pressure", "velocity", "energy",
+                     "equivalent_plastic_strain"):
             assert np.all(np.isfinite(r[key][ahead]))
         behind = x < r["piston_location"]
         if np.any(behind):
-            for key in ("density", "pressure", "velocity", "energy"):
+            for key in ("density", "pressure", "velocity", "energy",
+                         "equivalent_plastic_strain"):
                 assert np.all(np.isnan(r[key][behind]))
+
+    def test_elastic_regime_zero_plastic_strain(self, solver_and_result):
+        label, _, r = solver_and_result
+        if label != "elastic":
+            pytest.skip("only applies to elastic regime")
+        x = np.linspace(0, 1, 50)
+        ahead = x >= r["piston_location"]
+        assert np.all(r["equivalent_plastic_strain"][ahead] == 0.0)
 
 
 # ---------------------------------------------------------------------------
@@ -474,5 +501,6 @@ class TestNumericalSanity:
         for name in ("rho_Y", "e_Y", "P_Y", "U_se", "v_Y"):
             assert math.isfinite(getattr(s, name))
         if s.wave_structure != WaveStructure.ELASTIC_WAVE:
-            for name in ("U_s", "rho_2", "P_2", "e_2"):
+            for name in ("U_s", "rho_2", "P_2", "e_2",
+                         "equivalent_plastic_strain"):
                 assert math.isfinite(getattr(s, name))

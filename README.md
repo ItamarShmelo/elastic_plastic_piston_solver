@@ -297,6 +297,51 @@ The scan range is $v_{piston} \cdot 1.001$ to
 $\max(2 U_{se}^{yield},\; 10\, v_{piston})$, with the **largest** root
 selected (weakest compression, physically correct solution).
 
+### Equivalent plastic strain
+
+The equivalent (von Mises) plastic strain is defined by
+
+$$\bar\varepsilon^{pl} = \int_0^t \sqrt{\tfrac{2}{3}\,\boldsymbol{D}^{pl}:\boldsymbol{D}^{pl}}\;dt$$
+
+For uniaxial strain the plastic strain tensor is traceless
+($\mathrm{tr}\,\boldsymbol\varepsilon^{pl}=0$) with transverse symmetry,
+giving
+
+$$\boldsymbol\varepsilon^{pl}
+= \begin{pmatrix}
+\varepsilon_x^{pl} & 0 & 0\\
+0 & -\tfrac12\varepsilon_x^{pl} & 0\\
+0 & 0 & -\tfrac12\varepsilon_x^{pl}
+\end{pmatrix}$$
+
+The double contraction evaluates to
+$\boldsymbol{D}^{pl}:\boldsymbol{D}^{pl}
+= \tfrac32\left(\dot\varepsilon_x^{pl}\right)^2$,
+so $\bar\varepsilon^{pl} = |\varepsilon_x^{pl}|$ for monotone loading.
+
+Using the logarithmic strain $\varepsilon_x = \ln(\rho_0/\rho)$ and the
+elastic strain frozen at its yield value
+$\varepsilon_x^{el,Y} = \ln(\rho_0/\rho^Y) = -Y_0/(2G)$, the plastic
+part in the yielded region is
+
+$$\varepsilon_x^{pl}
+= \varepsilon_x - \varepsilon_x^{el,Y}
+= \ln\!\left(\frac{\rho^Y}{\rho}\right)$$
+
+For monotone compressive loading $\varepsilon_x^{pl}<0$, hence
+$\bar\varepsilon^{pl} = -\varepsilon_x^{pl} = \ln(\rho/\rho^Y)$.
+The equivalent plastic strain as a function of density is therefore
+
+$$\bar\varepsilon^{pl}(\rho)=
+\begin{cases}
+0, & \rho \le \rho^Y \\[4pt]
+\ln\!\left(\dfrac{\rho}{\rho^Y}\right), & \rho > \rho^Y
+\end{cases}$$
+
+In the shocked state 2:
+
+$$\bar\varepsilon^{pl}_2 = \ln\!\left(\frac{\rho_2}{\rho^Y}\right)$$
+
 ## Solver Algorithm
 
 1.  Define problem parameters
