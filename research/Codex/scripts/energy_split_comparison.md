@@ -14,17 +14,17 @@ $Y_0 / G = 0.0091$ — small elastic energy fraction.
 
 | Quantity | Original | Energy-split | Rel. Diff (%) |
 |----------|----------|--------------|---------------|
-| $U_{se}$ | $652066$ | $651585$ | $0.0737$ |
-| $U_s$ | $543900$ | $543892$ | $0.0013$ |
+| $U_{se}$ | $652066$ | $651586$ | $0.0736$ |
+| $U_s$ | $543900$ | $543895$ | $0.0008$ |
 | $\rho^Y$ | $2.80271$ | $2.80271$ | $0.0000$ |
-| $P^Y$ | $3.64661 \times 10^{9}$ | $3.63869 \times 10^{9}$ | $0.2174$ |
-| $v^Y$ | $2957.21$ | $2955.03$ | $0.0737$ |
-| $e^Y$ | $4.37255 \times 10^{6}$ | $4.3661 \times 10^{6}$ | $0.1473$ |
+| $P^Y$ | $3.64661 \times 10^{9}$ | $3.6387 \times 10^{9}$ | $0.2170$ |
+| $v^Y$ | $2957.21$ | $2955.03$ | $0.0736$ |
+| $e^Y$ | $4.37255 \times 10^{6}$ | $4.36611 \times 10^{6}$ | $0.1471$ |
 | $\rho_2$ | $2.81333$ | $2.81335$ | $0.0004$ |
-| $P_2$ | $6.7437 \times 10^{9}$ | $6.73905 \times 10^{9}$ | $0.0690$ |
-| $e_2$ | $1.37079 \times 10^{7}$ | $1.37031 \times 10^{7}$ | $0.0356$ |
+| $P_2$ | $6.7437 \times 10^{9}$ | $6.73907 \times 10^{9}$ | $0.0686$ |
+| $e_2$ | $1.37079 \times 10^{7}$ | $1.3703 \times 10^{7}$ | $0.0358$ |
 
-Energy breakdown (split mode): $e_{th}^Y = 2.95841 \times 10^{6}\,\mathrm{erg/g}$, $e_{el}^Y = 1.4077 \times 10^{6}\,\mathrm{erg/g}$, $e_{th,2} = 1.22954 \times 10^{7}\,\mathrm{erg/g}$, $e_{el,2} = 1.4077 \times 10^{6}\,\mathrm{erg/g}$.
+Energy breakdown (split mode): $e_{th}^Y = 2.96055 \times 10^{6}\,\mathrm{erg/g}$, $e_{el}^Y = 1.40557 \times 10^{6}\,\mathrm{erg/g}$, $e_{th,2} = 1.23028 \times 10^{7}\,\mathrm{erg/g}$, $e_{el,2} = 1.40025 \times 10^{6}\,\mathrm{erg/g}$.
 
 ![Aluminum comparison](../assets/aluminum_comparison.png)
 
@@ -37,7 +37,7 @@ $Y_0 / G = 0.002$ — very small elastic energy fraction.
 | Quantity | Original | Energy-split | Rel. Diff (%) |
 |----------|----------|--------------|---------------|
 | $U_{se}$ | $472218$ | $472146$ | $0.0151$ |
-| $U_s$ | $397696$ | $397695$ | $0.0001$ |
+| $U_s$ | $397696$ | $397696$ | $0.0000$ |
 | $\rho^Y$ | $8.93893$ | $8.93893$ | $0.0000$ |
 | $P^Y$ | $1.3903 \times 10^{9}$ | $1.3897 \times 10^{9}$ | $0.0432$ |
 | $v^Y$ | $471.982$ | $471.91$ | $0.0151$ |
@@ -46,29 +46,29 @@ $Y_0 / G = 0.002$ — very small elastic energy fraction.
 | $P_2$ | $6.81592 \times 10^{9}$ | $6.81557 \times 10^{9}$ | $0.0051$ |
 | $e_2$ | $2.1353 \times 10^{6}$ | $2.13516 \times 10^{6}$ | $0.0067$ |
 
-Energy breakdown (split mode): $e_{th}^Y = 77777.5\,\mathrm{erg/g}$, $e_{el}^Y = 33572.2\,\mathrm{erg/g}$, $e_{th,2} = 2.10159 \times 10^{6}\,\mathrm{erg/g}$, $e_{el,2} = 33572.2\,\mathrm{erg/g}$.
+Energy breakdown (split mode): $e_{th}^Y = 77788.7\,\mathrm{erg/g}$, $e_{el}^Y = 33561\,\mathrm{erg/g}$, $e_{th,2} = 2.10173 \times 10^{6}\,\mathrm{erg/g}$, $e_{el,2} = 33431.9\,\mathrm{erg/g}$.
 
 ![Copper comparison](../assets/copper_comparison.png)
 
 ## Case 3: High-Strength Material
 
-To demonstrate a regime where the energy-split mode differs significantly, we use an artificial high-strength material with $Y_0 / G = 0.40$.
+To demonstrate a regime where the energy-split mode differs significantly, we use an artificial high-strength material with $Y_0 / G = 0.70$.
 
-Material parameters: $\rho_0 = 2.79\,\mathrm{g/cm^3}$, $C_0 = 5.0 \times 10^4\,\mathrm{cm/s}$, $s = 1.2$, $\Gamma_0 = 2.5$, $G = 5.0 \times 10^{10}\,\mathrm{dyn/cm^2}$, $Y_0 = 2.0 \times 10^{10}\,\mathrm{dyn/cm^2}$, $v_{piston} = 4.0 \times 10^4\,\mathrm{cm/s}$.
+Material parameters: $\rho_0 = 2.79\,\mathrm{g/cm^3}$, $C_0 = 5.33 \times 10^5\,\mathrm{cm/s}$, $s = 1.34$, $\Gamma_0 = 2$, $G = 2.86 \times 10^{11}\,\mathrm{dyn/cm^2}$, $Y_0 = 2.0 \times 10^{11}\,\mathrm{dyn/cm^2}$, $v_{piston} = 4.5 \times 10^5\,\mathrm{cm/s}$.
 
 | Quantity | Original | Energy-split | Rel. Diff (%) |
 |----------|----------|--------------|---------------|
-| $U_{se}$ | $201334$ | $175451$ | $12.8556$ |
-| $U_s$ | $177574$ | $157943$ | $11.0551$ |
-| $\rho^Y$ | $3.40771$ | $3.40771$ | $0.0000$ |
-| $P^Y$ | $7.16708 \times 10^{9}$ | $2.23498 \times 10^{9}$ | $68.8160$ |
-| $v^Y$ | $36495.7$ | $31803.9$ | $12.8556$ |
-| $e^Y$ | $6.65967 \times 10^{8}$ | $5.05745 \times 10^{8}$ | $24.0585$ |
-| $\rho_2$ | $3.49452$ | $3.64452$ | $4.2926$ |
-| $P_2$ | $8.8518 \times 10^{9}$ | $5.75802 \times 10^{9}$ | $34.9509$ |
-| $e_2$ | $8.2154 \times 10^{8}$ | $8.36182 \times 10^{8}$ | $1.7823$ |
+| $U_{se}$ | $1.02747 \times 10^{6}$ | $978930$ | $4.7246$ |
+| $U_s$ | $752030$ | $797190$ | $6.0050$ |
+| $\rho^Y$ | $3.95781$ | $3.95781$ | $0.0000$ |
+| $P^Y$ | $7.35756 \times 10^{11}$ | $6.55574 \times 10^{11}$ | $10.8979$ |
+| $v^Y$ | $303172$ | $288848$ | $4.7246$ |
+| $e^Y$ | $4.59567 \times 10^{10}$ | $4.17167 \times 10^{10}$ | $9.2260$ |
+| $\rho_2$ | $5.88185$ | $5.79487$ | $1.4788$ |
+| $P_2$ | $9.96595 \times 10^{11}$ | $9.79798 \times 10^{11}$ | $1.6854$ |
+| $e_2$ | $1.28566 \times 10^{11}$ | $1.17892 \times 10^{11}$ | $8.3027$ |
 
-Energy breakdown (split mode): $e_{th}^Y = 8.70329 \times 10^{7}\,\mathrm{erg/g}$, $e_{el}^Y = 4.18712 \times 10^{8}\,\mathrm{erg/g}$, $e_{th,2} = 4.1747 \times 10^{8}\,\mathrm{erg/g}$, $e_{el,2} = 4.18712 \times 10^{8}\,\mathrm{erg/g}$.
+Energy breakdown (split mode): $e_{th}^Y = 3.58271 \times 10^{10}\,\mathrm{erg/g}$, $e_{el}^Y = 5.88962 \times 10^{9}\,\mathrm{erg/g}$, $e_{th,2} = 1.13869 \times 10^{11}\,\mathrm{erg/g}$, $e_{el,2} = 4.02252 \times 10^{9}\,\mathrm{erg/g}$.
 
 ![High-strength comparison](../assets/high_strength_comparison.png)
 

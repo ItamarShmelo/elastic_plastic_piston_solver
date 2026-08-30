@@ -136,13 +136,8 @@ def plot_comparison(
 
     fig, (ax_stress, ax_vel) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
-    PISTON_COLOR = "black"
-    PISTON_LW = 1.8
-
     ax_stress.plot(x, r_orig["stress"], linewidth=LW, label="Original")
     ax_stress.plot(x, r_split["stress"], linewidth=LW, linestyle="--", label="Energy-split")
-    ax_stress.axvline(r_orig["piston_location"], color=PISTON_COLOR,
-                      linestyle="--", linewidth=PISTON_LW, label="Piston")
     ax_stress.set_ylabel(r"$\sigma_x = S_x - P$  (dyn/cm$^2$)", fontsize=LABEL_SIZE)
     ax_stress.set_title(f"{title_prefix} — Stress comparison", fontsize=TITLE_SIZE)
     ax_stress.legend(fontsize=LEGEND_SIZE)
@@ -151,8 +146,6 @@ def plot_comparison(
 
     ax_vel.plot(x, r_orig["velocity"], linewidth=LW, label="Original")
     ax_vel.plot(x, r_split["velocity"], linewidth=LW, linestyle="--", label="Energy-split")
-    ax_vel.axvline(r_orig["piston_location"], color=PISTON_COLOR,
-                   linestyle="--", linewidth=PISTON_LW)
     ax_vel.set_ylabel(r"$v$  (cm/s)", fontsize=LABEL_SIZE)
     ax_vel.set_xlabel(r"$x$  (cm)", fontsize=LABEL_SIZE)
     ax_vel.set_title(f"{title_prefix} — Velocity comparison", fontsize=TITLE_SIZE)
@@ -217,11 +210,11 @@ def main() -> None:
     # Case 3: High-strength material (CGS) — large Y_0/G
     # ------------------------------------------------------------------
     hs_kw = dict(
-        rho_0=2.79, C_0=5.0e4, s=1.2, Gamma_0=2.5,
-        G=5.0e10, Y_0=2.0e10, e_initial=0.0, v_piston=40000.0,
+        rho_0=2.79, C_0=5.33e5, s=1.34, Gamma_0=2.0,
+        G=2.86e11, Y_0=2.0e11, e_initial=0.0, v_piston=450000.0,
     )
     s3_orig, s3_split, rows_hs = compare_solvers(
-        "Case 3: High-strength material", hs_kw, "(CGS, Y_0/G = 0.40)",
+        "Case 3: High-strength material", hs_kw, "(CGS, Y_0/G = 0.70)",
     )
     plot_comparison(s3_orig, s3_split, t=0.3e-6,
                     title_prefix=r"High-strength ($Y_0/G=0.70$)",
@@ -321,17 +314,17 @@ def _build_report(
     sections.append(
         "To demonstrate a regime where the energy-split mode differs "
         "significantly, we use an artificial high-strength material with "
-        "$Y_0 / G = 0.40$.\n"
+        "$Y_0 / G = 0.70$.\n"
     )
     sections.append(
         "Material parameters: "
         "$\\rho_0 = 2.79\\,\\mathrm{g/cm^3}$, "
-        "$C_0 = 5.0 \\times 10^4\\,\\mathrm{cm/s}$, "
-        "$s = 1.2$, "
-        "$\\Gamma_0 = 2.5$, "
-        "$G = 5.0 \\times 10^{10}\\,\\mathrm{dyn/cm^2}$, "
-        "$Y_0 = 2.0 \\times 10^{10}\\,\\mathrm{dyn/cm^2}$, "
-        "$v_{piston} = 4.0 \\times 10^4\\,\\mathrm{cm/s}$.\n"
+        "$C_0 = 5.33 \\times 10^5\\,\\mathrm{cm/s}$, "
+        "$s = 1.34$, "
+        "$\\Gamma_0 = 2$, "
+        "$G = 2.86 \\times 10^{11}\\,\\mathrm{dyn/cm^2}$, "
+        "$Y_0 = 2.0 \\times 10^{11}\\,\\mathrm{dyn/cm^2}$, "
+        "$v_{piston} = 4.5 \\times 10^5\\,\\mathrm{cm/s}$.\n"
     )
     sections.append(build_markdown_table(rows_hs))
     sections.append("")
