@@ -1,14 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "elastic-plastic-piston-solver"
 version = "0.1.0"
-description = "Add your description here"
+description = "Analytic Riemann solver for the elastic-plastic piston problem"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "astropy>=7.2.0",
-    "matplotlib>=3.10.7",
-    "mypy>=1.19.1",
     "numpy>=2.3.3",
     "scipy>=1.15.0",
+]
+
+[project.optional-dependencies]
+examples = [
+    "matplotlib>=3.10.7",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
     "scipy-stubs>=1.17.0.2",
 ]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["elastoplastic_piston_solver.py"]
